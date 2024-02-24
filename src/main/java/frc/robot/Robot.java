@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
   TalonFX shooterB = new TalonFX(3);
   CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
   TalonSRX hanger = new TalonSRX(12);
-  //
+  // hi
   public double autoStart = 0;
   public double wait = 0;
   double RPM;
