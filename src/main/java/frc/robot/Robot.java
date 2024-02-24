@@ -75,8 +75,7 @@ public class Robot extends TimedRobot {
   TalonFX shooterA = new TalonFX(4);
   TalonFX shooterB = new TalonFX(3);
   CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
-  TalonSRX hanger = new TalonSRX(12);
-  // hi
+  VictorSPX hanger = new VictorSPX(19);
   public double autoStart = 0;
   public double wait = 0;
   double RPM;
@@ -90,9 +89,9 @@ public class Robot extends TimedRobot {
   Encoder rightEncoder = new Encoder(0, 1);
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   //AMPLIGHTS 
-  PowerDistribution ampLight = new PowerDistribution();
-  //PowerDistribution examplePD = new PowerDistribution(0, ModuleType.kCTRE);
-  //PowerDistribution examplePD = new PowerDistribution(1, ModuleType.kRev);
+  //PowerDistribution ampLight = new PowerDistribution();
+  //PowerDistribution ampLight = new PowerDistribution(0, ModuleType.kCTRE);
+  PowerDistribution ampLight = new PowerDistribution(1, ModuleType.kRev);
 
   DifferentialDrive differentialDrive = new DifferentialDrive(
       (value) -> {
@@ -840,12 +839,14 @@ public class Robot extends TimedRobot {
     // AMP
     // INTAKE
     if (controller2.getLeftBumper()) {
+      ampLight.setSwitchableChannel(true);
       amp.set(ControlMode.PercentOutput, -0.5);
     }
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
       amp.set(ControlMode.PercentOutput, 0.5);
     } else {
+      ampLight.setSwitchableChannel(false);
       amp.set(ControlMode.PercentOutput, 0);
     }
 
@@ -858,8 +859,11 @@ public class Robot extends TimedRobot {
     }
     //HANGING
       //PART TWO
-    if(controller2.getXButton()){
+    if(controller2.getLeftY() >= 0.2 ){
       hanger.set(ControlMode.PercentOutput, 0.75);
+    }
+    else if(controller2.getLeftY() <= -0.2){
+      hanger.set(ControlMode.PercentOutput, -0.75);
     }
     else{
       hanger.set(ControlMode.PercentOutput, 0);
