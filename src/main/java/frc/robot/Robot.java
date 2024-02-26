@@ -456,14 +456,12 @@ public class Robot extends TimedRobot {
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
         if (leftEncoder.getDistance() > 10) {
-          shooterA.setControl(velocity.withVelocity(0));
-          shooterB.setControl(velocity.withVelocity(0));
           state = "four";
         }
       }
       if (state == "four") {
         intake.set(0);
-        driveB(0.6, 0.555);
+        driveB(0.6, 0.5);
         if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
           driveB(0, 0);
           state = "five";
