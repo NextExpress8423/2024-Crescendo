@@ -54,8 +54,8 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto3 = "red left";
   private static final String kCustomAuto4 = "red right";
   private static final String kCustomAuto5 = "double note auton!! [Speaker]";
-  private static final String kCustomAuto7 = "shoot 'n go! [Speaker]";
-  private static final String kCustomAuto6 = "triple note auton!!! >=D [Speaker]";
+  private static final String oneNoteAutonSpeaker = "one note auton [Speaker]";
+  private static final String kCustomAuto7 = "triple note auton!!! >=D [Speaker]";
   private static final String kCustomAuto8 = "quadruple note shoot! =D [Speaker]";
   private double speed = 0.5;
   private double turnSpeed = 0.5;
@@ -223,8 +223,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("red left", kDefaultAuto3);
     m_chooser.addOption("red right", kCustomAuto4);
     m_chooser.addOption("double note auton!! [Speaker]", kCustomAuto5);
-    m_chooser.addOption("shoot 'n go! [Speaker]", kCustomAuto7);
-    m_chooser.addOption("triple note auton!!! >=D [Speaker]", kCustomAuto6);
+    m_chooser.addOption(oneNoteAutonSpeaker, oneNoteAutonSpeaker);
+    m_chooser.addOption("triple note auton!!! >=D [Speaker]", kCustomAuto7);
     m_chooser.addOption("quadruple note shoot! =D [Speaker]", kCustomAuto8);
     // m_chooser.addOption("encoder test", kCustomAuto6);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -315,18 +315,395 @@ public class Robot extends TimedRobot {
   /* This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    System.out.println(m_autoSelected);
     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
     double autoTimeElapsedb = autoTimeElapsed - wait;
     SmartDashboard.putNumber("autoTimeElapsedB", autoTimeElapsedb);
     if (autoTimeElapsed >= 15) {
-      state = "fin";
+      stopEverything();
+      return;
     }
-    if (state == "fin") {
+    if(state == "fin"){
+      stopEverything();
+      return;
+    }
+    if (m_autoSelected == "double note auton!! [Speaker]") {
+      // System.out.println("no spam :-( ");
+      runDoubleNoteAuton(autoTimeElapsed);
+    } else if (m_autoSelected == "triple note auton!!! >=D [Speaker]") {
+      runTripleNoteAuton(autoTimeElapsed);
+    } else if (m_autoSelected == "triple note grab! [Speaker]") {
+      runTripleNoteGrab(autoTimeElapsed);
+    } else if (m_autoSelected == oneNoteAutonSpeaker) {
+      runOneNoteAuton(autoTimeElapsed);
+    } else {
+      checkOldRoutines(autoTimeElapsed);
+    }
+  }
+  public void stopEverything(){
       driveB(0, 0);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(0);
+  }
+  public void runDoubleNoteAuton(double autoTimeElapsed){
+    if (state == "init") {
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(0));
+        if (autoTimeElapsed > 1) {
+          state = "two";
+        }
+      }
+      if (state == "two") {
+        driveB(-0.6, -0.4);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(1200));
+        if (autoTimeElapsed > 2) {
+          state = "three";
+        }
+      }
+      if (state == "three") {
+        driveB(-0.76, -0.4);
+        intake.set(-0.5);
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        if (leftEncoder.getDistance() > 10) {
+          state = "four";
+        }
+      }
+      if (state == "four") {
+        intake.set(0);
+        driveB(0.6, 0.5);
+        if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+          driveB(0, 0);
+          state = "five";
+          wait = autoTimeElapsed + 0.5;
+        }
+      }
+      if (state == "five") { // SHOOT SECOND NOTE
+        driveB(0, 0);
+        shooterA.setControl(velocity.withVelocity(1500));
+       // System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
+        if (autoTimeElapsed > wait) {
+          wait = autoTimeElapsed + 1;
+          intake.set(0);
+          state = "six";
+        }
+      }
+      if (state == "six") { // SHOOT SECOND NOTE
+        driveB(0, 0);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(1200));
+        intake.set(-0.5);
+        //System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
+        if (autoTimeElapsed > wait) {
+          state = "fin";
+        }
+      }
+  }
+  public void runTripleNoteAuton(double autoTimeElapsed) {
+    if (state == "init") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
     }
+    if (state == "two") {
+      driveB(-0.6, -0.4);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      driveB(-0.6, -0.4);
+      intake.set(-0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftEncoder.getDistance() > 10) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        state = "four";
+      }
+    }
+    if (state == "four") {
+      intake.set(0);
+      driveB(0.6, 0.525);
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+        driveB(0, 0);
+        state = "five";
+        wait = autoTimeElapsed + 0.5;
+      }
+    }
+    if (state == "five") { // SHOOT SECOND NOTE
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      //System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
+      if (autoTimeElapsed > wait) {
+        wait = autoTimeElapsed + 1;
+        intake.set(0);
+        state = "six";
+      }
+    }
+    if (state == "six") { // SHOOT SECOND NOTE
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+     // System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
+      if (autoTimeElapsed > wait) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        intake.set(0);
+        state = "seven";
+      }
+    }
+    if (state == "seven") {
+      driveB(-0.9, -0.45);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() > 9) {
+        state = "eight";
+      }
+    }
+    if (state == "eight") {
+      driveB(0.9, 0.45);
+      intake.set(0);
+      if (leftEncoder.getDistance() < 3.5 && rightEncoder.getDistance() < 3.5) {
+        state = "nine";
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "nine") {
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > wait) {
+        wait = autoTimeElapsed + 1;
+        state = "ten";
+      }
+    }
+    if (state == "ten") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fin";
+      }
+    }
+  }
+
+  public void runTripleNoteGrab(double autoTimeElapsed) {
+    if (state == "init") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      driveB(-0.6, -0.4);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      driveB(-0.6, -0.4);
+      intake.set(-0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftEncoder.getDistance() > 10) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        state = "four";
+      }
+    }
+    if (state == "four") {
+      intake.set(0);
+      driveB(0.6, 0.525);
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+        driveB(0, 0);
+        state = "five";
+        wait = autoTimeElapsed + 0.5;
+      }
+    }
+    if (state == "five") { // SHOOT SECOND NOTE
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      // System.out.println("four ATE: " + autoTimeElapsed + " wait: " + wait + "
+      // ATEB: " + autoTimeElapsedb);
+      if (autoTimeElapsed > wait) {
+        wait = autoTimeElapsed + 1;
+        intake.set(0);
+        state = "six";
+      }
+    }
+    if (state == "six") { // SHOOT SECOND NOTE
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      // System.out.println("five ATE: " + autoTimeElapsed + " wait: " + wait + "
+      // ATEB: " + autoTimeElapsedb);
+      if (autoTimeElapsed > wait) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        intake.set(0);
+        state = "seven";
+      }
+    }
+    if (state == "seven") {
+      driveB(-0.9, -0.4);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+        state = "eight";
+      }
+    }
+    if (state == "eight") {
+      driveB(0.9, 0.4);
+      intake.set(0);
+      if (leftEncoder.getDistance() < 0.5 && rightEncoder.getDistance() < 0.5) {
+        state = "nine";
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "nine") {
+      driveB(0, 0);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > wait) {
+        wait = autoTimeElapsed + 1;
+        state = "ten";
+      }
+    }
+    if (state == "ten") { // SHOOT THIRD NOTE
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        intake.set(0);
+        state = "eleven";
+      }
+    }
+    if (state == "eleven") {
+      driveB(-0.75, -0.15);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
+        driveB(0, 0);
+        state = "twelve";
+      }
+    }
+    if (state == "twelve") {
+      driveB(0.75, 0.15);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
+        driveB(0, 0);
+        state = "thirteen";
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "thirteen") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0);
+      if (autoTimeElapsed > wait) {
+        state = "fourteen";
+        wait = autoTimeElapsed + 1;
+      }
+
+    }
+    if (state == "fourteen") {
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fin";
+      }
+    }
+
+    if (state == "ten") { // SHOOT THIRD NOTE
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        intake.set(0);
+        state = "eleven";
+      }
+    }
+    if (state == "eleven") {
+      driveB(-0.75, -0.15);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
+        driveB(0, 0);
+        state = "twelve";
+      }
+    }
+    if (state == "twelve") {
+      driveB(0.75, 0.15);
+      intake.set(-0.5);
+      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
+        driveB(0, 0);
+        state = "thirteen";
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "thirteen") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0);
+      if (autoTimeElapsed > wait) {
+        state = "fourteen";
+        wait = autoTimeElapsed + 1;
+      }
+
+    }
+    if (state == "fourteen") {
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fin";
+      }
+    }
+  }
+
+  public void runOneNoteAuton(double autoTimeElapsed) {
+    System.out.println("Entering oneNoteAuto block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      driveB(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      driveB(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftEncoder.getDistance() > 10 && rightEncoder.getDistance() > 10) {
+        state = "fin";
+      }
+    }
+
+  }
+
+  public void checkOldRoutines(double autoTimeElapsed) {
     if (m_autoSelected == "blue left") {
       if (autoTimeElapsed < 1.125) {
         driveForward(0.5, 1.125);
@@ -432,350 +809,6 @@ public class Robot extends TimedRobot {
         driveBackward(0.5, 7);
       } else if (autoTimeElapsed < 7.001) {
         driveForward(0, 0);
-      }
-    } else if (m_autoSelected == "double note auton!! [Speaker]") {
-      // System.out.println("no spam :-( ");
-      if (state == "init") {
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (autoTimeElapsed > 1) {
-          state = "two";
-        }
-      }
-      if (state == "two") {
-        driveB(-0.6, -0.4);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        if (autoTimeElapsed > 2) {
-          state = "three";
-        }
-      }
-      if (state == "three") {
-        driveB(-0.76, -0.4);
-        intake.set(-0.5);
-        shooterA.setControl(velocity.withVelocity(0));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (leftEncoder.getDistance() > 10) {
-          state = "four";
-        }
-      }
-      if (state == "four") {
-        intake.set(0);
-        driveB(0.6, 0.5);
-        if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
-          driveB(0, 0);
-          state = "five";
-          wait = autoTimeElapsed + 0.5;
-        }
-      }
-      if (state == "five") { // SHOOT SECOND NOTE
-        driveB(0, 0);
-        shooterA.setControl(velocity.withVelocity(1500));
-        System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-        if (autoTimeElapsed > wait) {
-          wait = autoTimeElapsed + 1;
-          intake.set(0);
-          state = "six";
-        }
-      }
-      if (state == "six") { // SHOOT SECOND NOTE
-        driveB(0, 0);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        intake.set(-0.5);
-        System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-        if (autoTimeElapsed > wait) {
-          state = "fin";
-        }
-      }
-    } else if (m_autoSelected == "triple note auton!!! >=D [Speaker]") {
-      if (state == "init") {
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (autoTimeElapsed > 1) {
-          state = "two";
-        }
-      }
-      if (state == "two") {
-        driveB(-0.6, -0.4);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        if (autoTimeElapsed > 2) {
-          state = "three";
-        }
-      }
-      if (state == "three") {
-        driveB(-0.6, -0.4);
-        intake.set(-0.5);
-        shooterA.setControl(velocity.withVelocity(0));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (leftEncoder.getDistance() > 10) {
-          shooterA.setControl(velocity.withVelocity(0));
-          shooterB.setControl(velocity.withVelocity(0));
-          state = "four";
-        }
-      }
-      if (state == "four") {
-        intake.set(0);
-        driveB(0.6, 0.525);
-        if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
-          driveB(0, 0);
-          state = "five";
-          wait = autoTimeElapsed + 0.5;
-        }
-      }
-      if (state == "five") { // SHOOT SECOND NOTE
-        driveB(0, 0);
-        shooterA.setControl(velocity.withVelocity(1500));
-        System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-        if (autoTimeElapsed > wait) {
-          wait = autoTimeElapsed + 1;
-          intake.set(0);
-          state = "six";
-        }
-      }
-      if (state == "six") { // SHOOT SECOND NOTE
-        driveB(0, 0);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        intake.set(-0.5);
-        System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-        if (autoTimeElapsed > wait) {
-          shooterA.setControl(velocity.withVelocity(0));
-          shooterB.setControl(velocity.withVelocity(0));
-          intake.set(0);
-          state = "seven";
-        }
-      }
-      if (state == "seven") {
-        driveB(-0.9, -0.4);
-        intake.set(-0.5);
-        if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
-          state = "eight";
-        }
-      }
-      if (state == "eight") {
-        driveB(0.9, 0.4);
-        intake.set(0);
-        if (leftEncoder.getDistance() < 0.5 && rightEncoder.getDistance() < 0.5) {
-          state = "nine";
-          wait = autoTimeElapsed + 1;
-        }
-      }
-      if (state == "nine") {
-        driveB(0, 0);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (autoTimeElapsed > wait) {
-          wait = autoTimeElapsed + 1;
-          state = "ten";
-        }
-      }
-      if (state == "ten") {
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        intake.set(-0.5);
-        if (autoTimeElapsed > wait) {
-          state = "fin";
-        }
-      } else if (m_autoSelected == "triple note grab! [Speaker]") {
-        if (state == "init") {
-          shooterA.setControl(velocity.withVelocity(1500));
-          shooterB.setControl(velocity.withVelocity(0));
-          if (autoTimeElapsed > 1) {
-            state = "two";
-          }
-        }
-        if (state == "two") {
-          driveB(-0.6, -0.4);
-          shooterA.setControl(velocity.withVelocity(1500));
-          shooterB.setControl(velocity.withVelocity(1200));
-          if (autoTimeElapsed > 2) {
-            state = "three";
-          }
-        }
-        if (state == "three") {
-          driveB(-0.6, -0.4);
-          intake.set(-0.5);
-          shooterA.setControl(velocity.withVelocity(0));
-          shooterB.setControl(velocity.withVelocity(0));
-          if (leftEncoder.getDistance() > 10) {
-            shooterA.setControl(velocity.withVelocity(0));
-            shooterB.setControl(velocity.withVelocity(0));
-            state = "four";
-          }
-        }
-        if (state == "four") {
-          intake.set(0);
-          driveB(0.6, 0.525);
-          if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
-            driveB(0, 0);
-            state = "five";
-            wait = autoTimeElapsed + 0.5;
-          }
-        }
-        if (state == "five") { // SHOOT SECOND NOTE
-          driveB(0, 0);
-          shooterA.setControl(velocity.withVelocity(1500));
-          System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-          if (autoTimeElapsed > wait) {
-            wait = autoTimeElapsed + 1;
-            intake.set(0);
-            state = "six";
-          }
-        }
-        if (state == "six") { // SHOOT SECOND NOTE
-          driveB(0, 0);
-          shooterA.setControl(velocity.withVelocity(1500));
-          shooterB.setControl(velocity.withVelocity(1200));
-          intake.set(-0.5);
-          System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
-          if (autoTimeElapsed > wait) {
-            shooterA.setControl(velocity.withVelocity(0));
-            shooterB.setControl(velocity.withVelocity(0));
-            intake.set(0);
-            state = "seven";
-          }
-        }
-        if (state == "seven") {
-          driveB(-0.9, -0.4);
-          intake.set(-0.5);
-          if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
-            state = "eight";
-          }
-        }
-        if (state == "eight") {
-          driveB(0.9, 0.4);
-          intake.set(0);
-          if (leftEncoder.getDistance() < 0.5 && rightEncoder.getDistance() < 0.5) {
-            state = "nine";
-            wait = autoTimeElapsed + 1;
-          }
-        }
-        if (state == "nine") {
-          driveB(0, 0);
-          shooterA.setControl(velocity.withVelocity(1500));
-          shooterB.setControl(velocity.withVelocity(0));
-          if (autoTimeElapsed > wait) {
-            wait = autoTimeElapsed + 1;
-            state = "ten";
-          }
-        }
-        if (state == "ten") { // SHOOT THIRD NOTE
-          shooterA.setControl(velocity.withVelocity(1500));
-          shooterB.setControl(velocity.withVelocity(1200));
-          intake.set(-0.5);
-          if (autoTimeElapsed > wait) {
-            shooterA.setControl(velocity.withVelocity(0));
-            shooterB.setControl(velocity.withVelocity(0));
-            intake.set(0);
-            state = "eleven";
-          }
-        }
-        if (state == "eleven") {
-          driveB(-0.75, -0.15);
-          intake.set(-0.5);
-          if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
-            driveB(0, 0);
-            state = "twelve";
-          }
-        }
-        if (state == "twelve") {
-          driveB(0.75, 0.15);
-          intake.set(-0.5);
-          if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
-            driveB(0, 0);
-            state = "thirteen";
-            wait = autoTimeElapsed + 1;
-          }
-          if (state == "thirteen") {
-            shooterA.setControl(velocity.withVelocity(1500));
-            shooterB.setControl(velocity.withVelocity(0));
-            intake.set(0);
-            if (autoTimeElapsed > wait) {
-              state = "fourteen";
-              wait = autoTimeElapsed + 1;
-            }
-
-          }
-          if (state == "fourteen") {
-            shooterB.setControl(velocity.withVelocity(1200));
-            intake.set(-0.5);
-            if (autoTimeElapsed > wait) {
-              state = "fin";
-            }
-          }
-
-          if (state == "ten") { // SHOOT THIRD NOTE
-            shooterA.setControl(velocity.withVelocity(1500));
-            shooterB.setControl(velocity.withVelocity(1200));
-            intake.set(-0.5);
-            if (autoTimeElapsed > wait) {
-              shooterA.setControl(velocity.withVelocity(0));
-              shooterB.setControl(velocity.withVelocity(0));
-              intake.set(0);
-              state = "eleven";
-            }
-          }
-          if (state == "eleven") {
-            driveB(-0.75, -0.15);
-            intake.set(-0.5);
-            if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
-              driveB(0, 0);
-              state = "twelve";
-            }
-          }
-          if (state == "twelve") {
-            driveB(0.75, 0.15);
-            intake.set(-0.5);
-            if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
-              driveB(0, 0);
-              state = "thirteen";
-              wait = autoTimeElapsed + 1;
-            }
-          }
-          if (state == "thirteen") {
-            shooterA.setControl(velocity.withVelocity(1500));
-            shooterB.setControl(velocity.withVelocity(0));
-            intake.set(0);
-            if (autoTimeElapsed > wait) {
-              state = "fourteen";
-              wait = autoTimeElapsed + 1;
-            }
-
-          }
-          if (state == "fourteen") {
-            shooterB.setControl(velocity.withVelocity(1200));
-            intake.set(-0.5);
-            if (autoTimeElapsed > wait) {
-              state = "fin";
-            }
-          }
-        } else if (m_autoSelected == "shoot 'n go! [Speaker]") {
-          if (state == "init") {
-            shooterA.setControl(velocity.withVelocity(1500));
-            shooterB.setControl(velocity.withVelocity(0));
-            if (autoTimeElapsed > 1) {
-              state = "two";
-            }
-          }
-          if (state == "two") {
-            driveB(-0.5, -0.5);
-            shooterA.setControl(velocity.withVelocity(1500));
-            shooterB.setControl(velocity.withVelocity(1200));
-            if (autoTimeElapsed > 2) {
-              state = "three";
-            }
-          }
-          if (state == "three") {
-            driveB(-0.5, -0.5);
-            shooterA.setControl(velocity.withVelocity(0));
-            shooterB.setControl(velocity.withVelocity(0));
-            if (leftEncoder.getDistance() > 15 && rightEncoder.getDistance() > 15) {
-              state = "fin";
-            }
-          }
-        }
       }
     }
   }
