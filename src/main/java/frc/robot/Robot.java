@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 //import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 //import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 //import edu.wpi.first.wpilibj.event.EventLoop;
 //import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
 //import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -100,6 +102,7 @@ public class Robot extends TimedRobot {
       (value) -> {
         driveRightA.set(ControlMode.PercentOutput, -value);
       });
+
 
   public Robot() {
     driveLeftB.follow(driveLeftA);
@@ -229,6 +232,7 @@ public class Robot extends TimedRobot {
     // m_chooser.addOption("encoder test", kCustomAuto6);
     SmartDashboard.putData("Auto choices", m_chooser);
 
+   
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = .101;
     configs.Slot0.kI = .125;
@@ -270,6 +274,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("gyro angle", gyro.getAngle());
     SmartDashboard.putNumber("gyro rate", gyro.getRate());
     SmartDashboard.putString("state", state);
+ 
   }
 
   /*
@@ -494,7 +499,6 @@ public class Robot extends TimedRobot {
       }
     }
   }
-
   public void runTripleNoteGrab(double autoTimeElapsed) {
     if (state == "init") {
       shooterA.setControl(velocity.withVelocity(1500));
@@ -672,7 +676,6 @@ public class Robot extends TimedRobot {
       }
     }
   }
-
   public void runOneNoteAuton(double autoTimeElapsed) {
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
@@ -702,7 +705,6 @@ public class Robot extends TimedRobot {
     }
 
   }
-
   public void checkOldRoutines(double autoTimeElapsed) {
     if (m_autoSelected == "blue left") {
       if (autoTimeElapsed < 1.125) {
