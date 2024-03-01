@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto4 = "red right";
   private static final String kCustomAuto5 = "double note auton!! [Speaker]";
   private static final String oneNoteAutonSpeaker = "one note auton [Speaker]";
-  private static final String kCustomAuto7 = "triple note auton!!! >=D [Speaker]";
-  private static final String kCustomAuto8 = "quadruple note shoot! =D [Speaker]";
+  private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
+  private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
   private double speed = 0.5;
   private double turnSpeed = 0.5;
   private double driveMode = 4;
@@ -227,8 +227,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("red right", kCustomAuto4);
     m_chooser.addOption("double note auton!! [Speaker]", kCustomAuto5);
     m_chooser.addOption(oneNoteAutonSpeaker, oneNoteAutonSpeaker);
-    m_chooser.addOption("triple note auton!!! >=D [Speaker]", kCustomAuto7);
-    m_chooser.addOption("quadruple note shoot! =D [Speaker]", kCustomAuto8);
+   // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]", kCustomAuto7);
+    //m_chooser.addOption("[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]", kCustomAuto8);
     // m_chooser.addOption("encoder test", kCustomAuto6);
     SmartDashboard.putData("Auto choices", m_chooser);
 
@@ -335,10 +335,10 @@ public class Robot extends TimedRobot {
     if (m_autoSelected == "double note auton!! [Speaker]") {
       // System.out.println("no spam :-( ");
       runDoubleNoteAuton(autoTimeElapsed);
-    } else if (m_autoSelected == "triple note auton!!! >=D [Speaker]") {
+    } else if (m_autoSelected == "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]") {
       runTripleNoteAuton(autoTimeElapsed);
-    } else if (m_autoSelected == "triple note grab! [Speaker]") {
-      runTripleNoteGrab(autoTimeElapsed);
+    } else if (m_autoSelected == "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]") {
+      runQuadrupleNoteShoot(autoTimeElapsed);
     } else if (m_autoSelected == oneNoteAutonSpeaker) {
       runOneNoteAuton(autoTimeElapsed);
     } else {
@@ -372,14 +372,14 @@ public class Robot extends TimedRobot {
         intake.set(-0.5);
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
-        if (leftEncoder.getDistance() > 10) {
+        if (rightEncoder.getDistance() > 10) {
           state = "four";
         }
       }
       if (state == "four") {
         intake.set(0);
         driveB(0.6, 0.5);
-        if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+        if (rightEncoder.getDistance() < 1.45) {
           driveB(0, 0);
           state = "five";
           wait = autoTimeElapsed + 0.5;
@@ -499,7 +499,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
-  public void runTripleNoteGrab(double autoTimeElapsed) {
+  public void runQuadrupleNoteShoot(double autoTimeElapsed) {
     if (state == "init") {
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(0));
