@@ -379,7 +379,7 @@ public class Robot extends TimedRobot {
       if (state == "four") {
         intake.set(0);
         driveB(0.6, 0.5);
-        if (rightEncoder.getDistance() < 1.45) {
+        if (rightEncoder.getDistance() < 3.5) {
           driveB(0, 0);
           state = "five";
           wait = autoTimeElapsed + 0.5;
