@@ -78,10 +78,10 @@ public class Robot extends TimedRobot {
   TalonFX shooterB = new TalonFX(3);
   CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
   /*
-  CANSparkMax driveRightA = new CANSparkMax(10, MotorType.kBrushless);
-  CANSparkMax driveRightB = new CANSparkMax(10, MotorType.kBrushless);
-  CANSparkMax driveLeftA = new CANSparkMax(10, MotorType.kBrushless);
-  CANSparkMax driveLeftB = new CANSparkMax(10, MotorType.kBrushless);
+  CANSparkMax driveRightA = new CANSparkMax(1, MotorType.kBrushless);
+  CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
+  CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
+  CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
   */
   VictorSPX hanger = new VictorSPX(19);
   public double autoStart = 0;
