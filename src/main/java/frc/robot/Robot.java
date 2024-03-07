@@ -101,16 +101,17 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive differentialDrive = new DifferentialDrive(
       (value) -> {
-        driveLeftA.set( value);
+        driveLeftA.set(value);
       },
       (value) -> {
-        driveRightA.set( -value);
+        driveRightA.set(value);
       });
 
 
   public Robot() {
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
+    driveRightA.setInverted(true);
   }
 
   // use driveForward(incert motor power here) to drive forward
@@ -837,7 +838,7 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", (Forward * speed) + turn);
     SmartDashboard.putNumber("right speed", (Forward * speed) - turn);
-  driveB( ((-Forward * speed) + turn),(Forward * speed) + turn);
+  driveB( ((Forward * speed) + turn),(Forward * speed) - turn);
     // TRIGGER CONTROLS (no turn yet)
     /*
      * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
