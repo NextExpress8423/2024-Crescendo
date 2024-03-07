@@ -91,8 +91,6 @@ public class Robot extends TimedRobot {
   String state = "init";
   // ENCODER STUFF
   // Creates an encoder on DIO ports 0 and 1
-  Encoder leftEncoder = new Encoder(2, 3);
-  Encoder rightEncoder = new Encoder(0, 1);
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   // AMPLIGHTS
   // PowerDistribution ampLight = new PowerDistribution();
@@ -186,6 +184,12 @@ public class Robot extends TimedRobot {
   public void turnMove(double left, double right) {
     differentialDrive.tankDrive(left, right);
   }
+  public double leftPosition(){
+    return driveLeftA.getEncoder().getPosition();
+  }
+  public double rightPosition(){
+    return driveRightA.getEncoder().getPosition();
+  }
 
   @Override
   public void robotInit() {
@@ -215,11 +219,11 @@ public class Robot extends TimedRobot {
     shooterA.getConfigurator().apply(configs);
     shooterB.getConfigurator().apply(configs);
 
-    leftEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
-    leftEncoder.reset();
-    rightEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
-    rightEncoder.setReverseDirection(true);
-    rightEncoder.reset();
+    driveLeftA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
+    driveLeftA.getEncoder().setPosition(0);
+    driveRightA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
+    driveRightA.getEncoder().setPosition(0);
+    driveRightA.getEncoder().setInverted(true);
 
     gyro.reset();
 
@@ -236,12 +240,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("leftEncoder distance", leftEncoder.getDistance());
-    SmartDashboard.putNumber("leftEncoder get", leftEncoder.get());
-    SmartDashboard.putNumber("leftEncoder raw", leftEncoder.getRaw());
-    SmartDashboard.putNumber("rightEncoder distance", rightEncoder.getDistance());
-    SmartDashboard.putNumber("rightEncoder get", rightEncoder.get());
-    SmartDashboard.putNumber("rightEncoder raw", rightEncoder.getRaw());
+    SmartDashboard.putNumber("leftEncoder distance", leftPosition());
+    SmartDashboard.putNumber("rightEncoder distance", rightPosition());
     SmartDashboard.putNumber("gyro angle", gyro.getAngle());
     SmartDashboard.putNumber("gyro rate", gyro.getRate());
     SmartDashboard.putString("state", state);
@@ -270,7 +270,8 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     autoStart = Timer.getFPGATimestamp();
-
+    driveRightA.getEncoder().setPosition(0);
+    driveLeftA.getEncoder().setPosition(0);
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
     // ENCODER STUFF
@@ -278,10 +279,7 @@ public class Robot extends TimedRobot {
     // The robot moves forward 1 foot per encoder rotation
     // There are 256 pulses per encoder rotation
     // NOW NOT ACCURATE
-    leftEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
-    leftEncoder.reset();
-    rightEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
-    rightEncoder.reset();
+    
 
     gyro.reset();
     state = "init";
@@ -343,14 +341,14 @@ public class Robot extends TimedRobot {
         intake.set(-0.5);
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
-        if (rightEncoder.getDistance() > 10) {
+        if (rightPosition() > 10) {
           state = "four";
         }
       }
       if (state == "four") {
         intake.set(0);
         driveB(0.55, 0.45); //change left to 0.625? Leave right same?
-        if (rightEncoder.getDistance() < 3.5) {
+        if (rightPosition() < 3.5) {
           driveB(0, 0);
           state = "five";
           wait = autoTimeElapsed + 0.5;
@@ -399,7 +397,7 @@ public class Robot extends TimedRobot {
       intake.set(-0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftEncoder.getDistance() > 10) {
+      if (leftPosition() > 10) {
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
         state = "four";
@@ -408,7 +406,7 @@ public class Robot extends TimedRobot {
     if (state == "four") {
       intake.set(0);
       driveB(0.6, 0.525);//retrieve second note (part two)
-      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
         driveB(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -440,14 +438,14 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       driveB(-0.9, -0.45);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() > 9) {
+      if (leftPosition() > 9) {
         state = "eight";
       }
     }
     if (state == "eight") {
       driveB(0.9, 0.45);
       intake.set(0);
-      if (leftEncoder.getDistance() < 3.5 && rightEncoder.getDistance() < 3.5) {
+      if (leftPosition() < 3.5 && rightPosition() < 3.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -491,7 +489,7 @@ public class Robot extends TimedRobot {
       intake.set(-0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftEncoder.getDistance() > 10) {
+      if (leftPosition() > 10) {
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
         state = "four";
@@ -500,7 +498,7 @@ public class Robot extends TimedRobot {
     if (state == "four") {
       intake.set(0);
       driveB(0.6, 0.525);
-      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
         driveB(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -534,14 +532,14 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       driveB(-0.9, -0.4);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
         state = "eight";
       }
     }
     if (state == "eight") {
       driveB(0.9, 0.4);
       intake.set(0);
-      if (leftEncoder.getDistance() < 0.5 && rightEncoder.getDistance() < 0.5) {
+      if (leftPosition() < 0.5 && rightPosition() < 0.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -569,7 +567,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       driveB(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
+      if (leftPosition() > 8 && rightPosition() > 8) {
         driveB(0, 0);
         state = "twelve";
       }
@@ -577,7 +575,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       driveB(0.75, 0.15);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
+      if (leftPosition() < 1 && rightPosition() < 1) {
         driveB(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
@@ -615,7 +613,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       driveB(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
+      if (leftPosition() > 8 && rightPosition() > 8) {
         driveB(0, 0);
         state = "twelve";
       }
@@ -623,7 +621,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       driveB(0.75, 0.15);
       intake.set(-0.5);
-      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
+      if (leftPosition() < 1 && rightPosition() < 1) {
         driveB(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
@@ -670,7 +668,7 @@ public class Robot extends TimedRobot {
       driveB(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (rightEncoder.getDistance() > 10) { //Only use one encoder
+      if (rightPosition() > 10) { //Only use one encoder
         state = "fin";
       }
     }
@@ -799,8 +797,8 @@ public class Robot extends TimedRobot {
   /* This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    leftEncoder.reset();
-    rightEncoder.reset();
+    driveRightA.getEncoder().setPosition(0);
+    driveLeftA.getEncoder().setPosition(0);
     gyro.reset();
   }
 
