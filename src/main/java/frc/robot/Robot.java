@@ -184,6 +184,7 @@ public class Robot extends TimedRobot {
   public void turnMove(double left, double right) {
     differentialDrive.tankDrive(left, right);
   }
+  //encoder position
   public double leftPosition(){
     return driveLeftA.getEncoder().getPosition();
   }
@@ -218,7 +219,7 @@ public class Robot extends TimedRobot {
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     shooterA.getConfigurator().apply(configs);
     shooterB.getConfigurator().apply(configs);
-
+//encoder setup
     driveLeftA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
     driveLeftA.getEncoder().setPosition(0);
     driveRightA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
