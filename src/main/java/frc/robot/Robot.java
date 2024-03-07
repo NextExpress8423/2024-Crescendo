@@ -69,20 +69,18 @@ public class Robot extends TimedRobot {
   // Variables
   XboxController controller1 = new XboxController(0);
   XboxController controller2 = new XboxController(1);
-  VictorSPX driveRightA = new VictorSPX(1);
-  VictorSPX driveRightB = new VictorSPX(2);
-  VictorSPX driveLeftA = new VictorSPX(8);
-  VictorSPX driveLeftB = new VictorSPX(9);
+  // VictorSPX driveRightA = new VictorSPX(1);
+  // VictorSPX driveRightB = new VictorSPX(2);
+  // VictorSPX driveLeftA = new VictorSPX(8);
+  // VictorSPX driveLeftB = new VictorSPX(9);
   double turn = controller1.getRightX() * turnSpeed;
   TalonFX shooterA = new TalonFX(4);
   TalonFX shooterB = new TalonFX(3);
   CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
-  /*
   CANSparkMax driveRightA = new CANSparkMax(1, MotorType.kBrushless);
   CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
   CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
-  */
   VictorSPX hanger = new VictorSPX(19);
   public double autoStart = 0;
   public double wait = 0;
@@ -103,10 +101,10 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive differentialDrive = new DifferentialDrive(
       (value) -> {
-        driveLeftA.set(ControlMode.PercentOutput, value);
+        driveLeftA.set( value);
       },
       (value) -> {
-        driveRightA.set(ControlMode.PercentOutput, -value);
+        driveRightA.set( -value);
       });
 
 
@@ -117,50 +115,22 @@ public class Robot extends TimedRobot {
 
   // use driveForward(incert motor power here) to drive forward
   public void driveForward(double speed, double endTime) {
-    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    if (endTime - autoTimeElapsed < 0.25) {
-      speed = speed * (endTime - autoTimeElapsed) * 4;
-    }
-    driveLeftA.set(ControlMode.PercentOutput, -speed);
-    driveLeftB.set(ControlMode.PercentOutput, -speed);
-    driveRightA.set(ControlMode.PercentOutput, speed);
-    driveRightB.set(ControlMode.PercentOutput, speed);
+    drive(speed, speed, endTime);
   }
 
   // use driveBackward(incert motor power here) to drive backward
   public void driveBackward(double speed, double endTime) {
-    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    if (endTime - autoTimeElapsed < 0.25) {
-      speed = speed * (endTime - autoTimeElapsed) * 4;
-    }
-    driveLeftA.set(ControlMode.PercentOutput, speed);
-    driveLeftB.set(ControlMode.PercentOutput, speed);
-    driveRightA.set(ControlMode.PercentOutput, -speed);
-    driveRightB.set(ControlMode.PercentOutput, -speed);
+    drive(-speed, -speed, endTime);
   }
 
   // use turnRight(incert motor power here) to turn right
   public void turnLeft(double speed, double endTime) {
-    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    if (endTime - autoTimeElapsed < 0.25) {
-      speed = speed * (endTime - autoTimeElapsed) * 4;
-    }
-    driveLeftA.set(ControlMode.PercentOutput, -speed);
-    driveLeftB.set(ControlMode.PercentOutput, -speed);
-    driveRightA.set(ControlMode.PercentOutput, -speed);
-    driveRightB.set(ControlMode.PercentOutput, -speed);
+    drive(-speed, speed, endTime);
   }
 
   // use turnLeft(incert motor power here) to turn left
   public void turnRight(double speed, double endTime) {
-    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    if (endTime - autoTimeElapsed < 0.25) {
-      speed = speed * (endTime - autoTimeElapsed) * 4;
-    }
-    driveLeftA.set(ControlMode.PercentOutput, speed);
-    driveLeftB.set(ControlMode.PercentOutput, speed);
-    driveRightA.set(ControlMode.PercentOutput, speed);
-    driveRightB.set(ControlMode.PercentOutput, speed);
+    drive(speed, -speed, endTime);
   }
 
   // use drive(incert left speed here, incert right speed here) to drive (tank
@@ -171,17 +141,11 @@ public class Robot extends TimedRobot {
       leftSpeed = leftSpeed * (endTime - autoTimeElapsed) * 4;
       rightSpeed = rightSpeed * (endTime - autoTimeElapsed) * 4;
     }
-    driveLeftA.set(ControlMode.PercentOutput, -leftSpeed);
-    driveLeftB.set(ControlMode.PercentOutput, -leftSpeed);
-    driveRightA.set(ControlMode.PercentOutput, rightSpeed);
-    driveRightB.set(ControlMode.PercentOutput, rightSpeed);
+    driveB(leftSpeed, rightSpeed);
   }
 
   public void driveB(double leftSpeed, double rightSpeed) {
-    driveLeftA.set(ControlMode.PercentOutput, -leftSpeed);
-    driveLeftB.set(ControlMode.PercentOutput, -leftSpeed);
-    driveRightA.set(ControlMode.PercentOutput, rightSpeed);
-    driveRightB.set(ControlMode.PercentOutput, rightSpeed);
+    differentialDrive.tankDrive(leftSpeed,rightSpeed);
   }
 
   public double constrain(double number, double maximum, double minimum) {
@@ -873,11 +837,7 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", (Forward * speed) + turn);
     SmartDashboard.putNumber("right speed", (Forward * speed) - turn);
-    driveLeftA.set(ControlMode.PercentOutput, ((-Forward * speed) + turn));
-    driveLeftB.set(ControlMode.PercentOutput, ((-Forward * speed) + turn));
-    driveRightA.set(ControlMode.PercentOutput, (Forward * speed) + turn);
-    driveRightB.set(ControlMode.PercentOutput, (Forward * speed) + turn);
-
+  driveB( ((-Forward * speed) + turn),(Forward * speed) + turn);
     // TRIGGER CONTROLS (no turn yet)
     /*
      * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
