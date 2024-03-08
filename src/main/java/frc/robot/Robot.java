@@ -279,7 +279,7 @@ public class Robot extends TimedRobot {
     // Configures the encoder's distance-per-pulse
     // The robot moves forward 1 foot per encoder rotation
     // There are 256 pulses per encoder rotation
-    // NOW NOT ACCURATE
+    // NOW NOT ACCURATE (replaced encoders after coment was added)
     
 
     gyro.reset();
