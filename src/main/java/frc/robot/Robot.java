@@ -59,8 +59,8 @@ public class Robot extends TimedRobot {
   private static final String oneNoteAutonSpeaker = "one note auton [Speaker]";
   private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
-  private double speed = 0.5;
-  private double turnSpeed = 0.5;
+  private double speed = 5.0;
+  private double turnSpeed = 1.5;
   private double driveMode = 4;
   double Forward = 0;
   private String m_autoSelected;
@@ -69,28 +69,31 @@ public class Robot extends TimedRobot {
   // Variables
   XboxController controller1 = new XboxController(0);
   XboxController controller2 = new XboxController(1);
-  // VictorSPX driveRightA = new VictorSPX(1);
-  // VictorSPX driveRightB = new VictorSPX(2);
-  // VictorSPX driveLeftA = new VictorSPX(8);
-  // VictorSPX driveLeftB = new VictorSPX(9);
-  double turn = controller1.getRightX() * turnSpeed;
-  TalonFX shooterA = new TalonFX(4);
-  TalonFX shooterB = new TalonFX(3);
-  CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
   CANSparkMax driveRightA = new CANSparkMax(1, MotorType.kBrushless);
   CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
   CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
+  // VictorSPX driveRightA = new VictorSPX(1);
+  // VictorSPX driveRightB = new VictorSPX(2);
+  // VictorSPX driveLeftA = new VictorSPX(8);
+  // VictorSPX driveLeftB = new VictorSPX(9);
+  double turn = controller1.getRightX() / turnSpeed;
+  TalonFX shooterA = new TalonFX(4);
+  TalonFX shooterB = new TalonFX(3);
   VictorSPX hanger = new VictorSPX(19);
+  CANSparkMax intake = new CANSparkMax(10, MotorType.kBrushless);
   public double autoStart = 0;
   public double wait = 0;
   double RPM;
   VelocityVoltage velocity = new VelocityVoltage(RPM, 0, true, 0, 0, false, false, false);
+  VelocityVoltage velocitySlow = new VelocityVoltage(RPM, 0, true, 0, 1, false, false, false);
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
   // ENCODER STUFF
   // Creates an encoder on DIO ports 0 and 1
+  Encoder leftEncoder = new Encoder(2, 3);
+  Encoder rightEncoder = new Encoder(0, 1);
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   // AMPLIGHTS
   // PowerDistribution ampLight = new PowerDistribution();
@@ -99,37 +102,64 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive differentialDrive = new DifferentialDrive(
       (value) -> {
-        driveLeftA.set(value);
+        driveLeftA.set( value);
       },
       (value) -> {
-        driveRightA.set(value);
+        driveRightA.set( -value);
       });
 
 
   public Robot() {
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
-    driveRightA.setInverted(true);
   }
 
   // use driveForward(incert motor power here) to drive forward
   public void driveForward(double speed, double endTime) {
-    drive(speed, speed, endTime);
+    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    if (endTime - autoTimeElapsed < 0.25) {
+      speed = speed * (endTime - autoTimeElapsed) * 4;
+    }
+    driveLeftA.set( -speed);
+    driveLeftB.set( -speed);
+    driveRightA.set( speed);
+    driveRightB.set( speed);
   }
 
   // use driveBackward(incert motor power here) to drive backward
   public void driveBackward(double speed, double endTime) {
-    drive(-speed, -speed, endTime);
+    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    if (endTime - autoTimeElapsed < 0.25) {
+      speed = speed * (endTime - autoTimeElapsed) * 4;
+    }
+    driveLeftA.set( speed);
+    driveLeftB.set( speed);
+    driveRightA.set( -speed);
+    driveRightB.set( -speed);
   }
 
   // use turnRight(incert motor power here) to turn right
   public void turnLeft(double speed, double endTime) {
-    drive(-speed, speed, endTime);
+    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    if (endTime - autoTimeElapsed < 0.25) {
+      speed = speed * (endTime - autoTimeElapsed) * 4;
+    }
+    driveLeftA.set( -speed);
+    driveLeftB.set( -speed);
+    driveRightA.set( -speed);
+    driveRightB.set( -speed);
   }
 
   // use turnLeft(incert motor power here) to turn left
   public void turnRight(double speed, double endTime) {
-    drive(speed, -speed, endTime);
+    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
+    if (endTime - autoTimeElapsed < 0.25) {
+      speed = speed * (endTime - autoTimeElapsed) * 4;
+    }
+    driveLeftA.set( speed);
+    driveLeftB.set( speed);
+    driveRightA.set( speed);
+    driveRightB.set( speed);
   }
 
   // use drive(incert left speed here, incert right speed here) to drive (tank
@@ -140,11 +170,17 @@ public class Robot extends TimedRobot {
       leftSpeed = leftSpeed * (endTime - autoTimeElapsed) * 4;
       rightSpeed = rightSpeed * (endTime - autoTimeElapsed) * 4;
     }
-    driveB(leftSpeed, rightSpeed);
+    driveLeftA.set( -leftSpeed);
+    driveLeftB.set( -leftSpeed);
+    driveRightA.set( rightSpeed);
+    driveRightB.set( rightSpeed);
   }
 
   public void driveB(double leftSpeed, double rightSpeed) {
-    differentialDrive.tankDrive(leftSpeed,rightSpeed);
+    driveLeftA.set( -leftSpeed);
+    driveLeftB.set( -leftSpeed);
+    driveRightA.set( rightSpeed);
+    driveRightB.set( rightSpeed);
   }
 
   public double constrain(double number, double maximum, double minimum) {
@@ -184,13 +220,6 @@ public class Robot extends TimedRobot {
   public void turnMove(double left, double right) {
     differentialDrive.tankDrive(left, right);
   }
-  //encoder position
-  public double leftPosition(){
-    return driveLeftA.getEncoder().getPosition();
-  }
-  public double rightPosition(){
-    return driveRightA.getEncoder().getPosition();
-  }
 
   @Override
   public void robotInit() {
@@ -210,21 +239,26 @@ public class Robot extends TimedRobot {
 
    
     TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.Slot0.kP = .101;
-    configs.Slot0.kI = .125;
-    configs.Slot0.kD = .01;
+    configs.Slot0.kP = 0.101;
+    configs.Slot0.kI = 0.21;
+    configs.Slot0.kD = 0.01;
+
+    configs.Slot1.kP = 0.101;
+    configs.Slot1.kI = 0.065;
+    configs.Slot1.kD = 0.01;
+
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     shooterA.getConfigurator().apply(configs);
     shooterB.getConfigurator().apply(configs);
-//encoder setup
-    driveLeftA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
-    driveLeftA.getEncoder().setPosition(0);
-    driveRightA.getEncoder().setPositionConversionFactor(6.0 *Math.PI / 12.0);
-    driveRightA.getEncoder().setPosition(0);
-    driveRightA.getEncoder().setInverted(true);
+
+    leftEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
+    leftEncoder.reset();
+    rightEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
+    rightEncoder.setReverseDirection(true);
+    rightEncoder.reset();
 
     gyro.reset();
 
@@ -241,8 +275,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("leftEncoder distance", leftPosition());
-    SmartDashboard.putNumber("rightEncoder distance", rightPosition());
+    SmartDashboard.putNumber("leftEncoder distance", leftEncoder.getDistance());
+    SmartDashboard.putNumber("leftEncoder get", leftEncoder.get());
+    SmartDashboard.putNumber("leftEncoder raw", leftEncoder.getRaw());
+    SmartDashboard.putNumber("rightEncoder distance", rightEncoder.getDistance());
+    SmartDashboard.putNumber("rightEncoder get", rightEncoder.get());
+    SmartDashboard.putNumber("rightEncoder raw", rightEncoder.getRaw());
     SmartDashboard.putNumber("gyro angle", gyro.getAngle());
     SmartDashboard.putNumber("gyro rate", gyro.getRate());
     SmartDashboard.putString("state", state);
@@ -271,16 +309,18 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     autoStart = Timer.getFPGATimestamp();
-    driveRightA.getEncoder().setPosition(0);
-    driveLeftA.getEncoder().setPosition(0);
+
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
     // ENCODER STUFF
     // Configures the encoder's distance-per-pulse
     // The robot moves forward 1 foot per encoder rotation
     // There are 256 pulses per encoder rotation
-    // NOW NOT ACCURATE (replaced encoders after coment was added)
-    
+    // NOW NOT ACCURATE
+    leftEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
+    leftEncoder.reset();
+    rightEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
+    rightEncoder.reset();
 
     gyro.reset();
     state = "init";
@@ -330,7 +370,7 @@ public class Robot extends TimedRobot {
         }
       }
       if (state == "two") {
-        driveB(-0.55, -0.475);
+        driveB(-0.6, -0.4);
         shooterA.setControl(velocity.withVelocity(1500));
         shooterB.setControl(velocity.withVelocity(1200));
         if (autoTimeElapsed > 2) {
@@ -338,18 +378,19 @@ public class Robot extends TimedRobot {
         }
       }
       if (state == "three") {
-        driveB(-0.75, -0.4);
+        driveB(-0.76, -0.4);
         intake.set(-0.5);
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
-        if (rightPosition() > 10) {
+        if (rightEncoder.getDistance() > 10) {
           state = "four";
         }
       }
       if (state == "four") {
         intake.set(0);
-        driveB(0.55, 0.45); //change left to 0.625? Leave right same?
-        if (rightPosition() < 3.5) {
+        driveB(0.6, 0.5);
+        if (rightEncoder.getDistance() < 1.45) {
+        if (rightEncoder.getDistance() < 3.5) {
           driveB(0, 0);
           state = "five";
           wait = autoTimeElapsed + 0.5;
@@ -375,6 +416,7 @@ public class Robot extends TimedRobot {
           state = "fin";
         }
       }
+    }
   }
   public void runTripleNoteAuton(double autoTimeElapsed) {
     if (state == "init") {
@@ -386,19 +428,19 @@ public class Robot extends TimedRobot {
     }
     if (state == "two") {
       driveB(-0.6, -0.4);
-      shooterA.setControl(velocity.withVelocity(2100));
-      shooterB.setControl(velocity.withVelocity(1800));
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
       if (autoTimeElapsed > 2) {
         state = "three";
       }
     }
     if (state == "three") {
-      driveB(-0.6, -0.4); //retrieve second note (part one)
+      driveB(-0.6, -0.4);
       intake.set(-0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition() > 10) {
+      if (leftEncoder.getDistance() > 10) {
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
         state = "four";
@@ -406,8 +448,8 @@ public class Robot extends TimedRobot {
     }
     if (state == "four") {
       intake.set(0);
-      driveB(0.6, 0.525);//retrieve second note (part two)
-      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
+      driveB(0.6, 0.525);
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
         driveB(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -415,7 +457,7 @@ public class Robot extends TimedRobot {
     }
     if (state == "five") { // SHOOT SECOND NOTE
       driveB(0, 0);
-      shooterA.setControl(velocity.withVelocity(2000));
+      shooterA.setControl(velocity.withVelocity(1500));
       //System.out.println("four ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
       if (autoTimeElapsed > wait) {
         wait = autoTimeElapsed + 1;
@@ -425,8 +467,8 @@ public class Robot extends TimedRobot {
     }
     if (state == "six") { // SHOOT SECOND NOTE
       driveB(0, 0);
-      shooterA.setControl(velocity.withVelocity(2000));
-      shooterB.setControl(velocity.withVelocity(1700));
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
      // System.out.println("five ATE: " + autoTimeElapsed + "  wait: " + wait + "   ATEB: " + autoTimeElapsedb);
       if (autoTimeElapsed > wait) {
@@ -439,14 +481,14 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       driveB(-0.9, -0.45);
       intake.set(-0.5);
-      if (leftPosition() > 9) {
+      if (leftEncoder.getDistance() > 9) {
         state = "eight";
       }
     }
     if (state == "eight") {
       driveB(0.9, 0.45);
       intake.set(0);
-      if (leftPosition() < 3.5 && rightPosition() < 3.5) {
+      if (leftEncoder.getDistance() < 3.5 && rightEncoder.getDistance() < 3.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -490,7 +532,7 @@ public class Robot extends TimedRobot {
       intake.set(-0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition() > 10) {
+      if (leftEncoder.getDistance() > 10) {
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));
         state = "four";
@@ -499,7 +541,7 @@ public class Robot extends TimedRobot {
     if (state == "four") {
       intake.set(0);
       driveB(0.6, 0.525);
-      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
         driveB(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -533,14 +575,14 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       driveB(-0.9, -0.4);
       intake.set(-0.5);
-      if (leftPosition() < 1.45 && rightPosition() < 1.45) {
+      if (leftEncoder.getDistance() < 1.45 && rightEncoder.getDistance() < 1.45) {
         state = "eight";
       }
     }
     if (state == "eight") {
       driveB(0.9, 0.4);
       intake.set(0);
-      if (leftPosition() < 0.5 && rightPosition() < 0.5) {
+      if (leftEncoder.getDistance() < 0.5 && rightEncoder.getDistance() < 0.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -568,7 +610,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       driveB(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftPosition() > 8 && rightPosition() > 8) {
+      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
         driveB(0, 0);
         state = "twelve";
       }
@@ -576,7 +618,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       driveB(0.75, 0.15);
       intake.set(-0.5);
-      if (leftPosition() < 1 && rightPosition() < 1) {
+      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
         driveB(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
@@ -614,7 +656,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       driveB(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftPosition() > 8 && rightPosition() > 8) {
+      if (leftEncoder.getDistance() > 8 && rightEncoder.getDistance() > 8) {
         driveB(0, 0);
         state = "twelve";
       }
@@ -622,7 +664,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       driveB(0.75, 0.15);
       intake.set(-0.5);
-      if (leftPosition() < 1 && rightPosition() < 1) {
+      if (leftEncoder.getDistance() < 1 && rightEncoder.getDistance() < 1) {
         driveB(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
@@ -669,7 +711,7 @@ public class Robot extends TimedRobot {
       driveB(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (rightPosition() > 10) { //Only use one encoder
+      if (leftEncoder.getDistance() > 10 && rightEncoder.getDistance() > 10) {
         state = "fin";
       }
     }
@@ -798,8 +840,8 @@ public class Robot extends TimedRobot {
   /* This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    driveRightA.getEncoder().setPosition(0);
-    driveLeftA.getEncoder().setPosition(0);
+    leftEncoder.reset();
+    rightEncoder.reset();
     gyro.reset();
   }
 
@@ -808,25 +850,25 @@ public class Robot extends TimedRobot {
 
   public void teleopPeriodic() {
 
-    turn = (controller1.getLeftX() * turnSpeed);
+    turn = (-controller1.getRightX() * -turnSpeed);
 
-    // Forward = controller1.getLeftY();
+    Forward = controller1.getLeftY();
 
-    Forward = controller1.getRightTriggerAxis() - controller1.getLeftTriggerAxis();
+    //Forward = controller1.getRightTriggerAxis() - controller1.getLeftTriggerAxis();
 
     // SPEED
     if (controller1.getLeftBumper()) {
-      speed = -0.25;
+      speed = 7;
     } else if (controller1.getRightBumper()) {
-      speed = -0.9;
+      speed = 2;
     } else {
-      speed = -0.5;
-    }
+      speed = 5;
+    } 
 
     if (Math.abs(Forward) < 0.25) {
-      turnSpeed = 0.6;
+      turnSpeed = 1.0;
     } else {
-      turnSpeed = 0.4;
+      turnSpeed = 0.5;
     }
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", -Forward);
@@ -835,9 +877,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber(" drive mode", driveMode);
 
     // JOYSTICK CONTROLS + TRIGGER
-    SmartDashboard.putNumber("left speed", (Forward * speed) + turn);
-    SmartDashboard.putNumber("right speed", (Forward * speed) - turn);
-  driveB( ((Forward * speed) + turn),(Forward * speed) - turn);
+    SmartDashboard.putNumber("left speed", (Forward / speed) + turn);
+    SmartDashboard.putNumber("right speed", (Forward / speed) - turn);
+    driveLeftA.set( ((turn / speed) - Forward));
+    driveLeftB.set( ((turn / speed) - Forward));
+    driveRightA.set( (turn / speed) + Forward);
+    driveRightB.set( (turn / speed) + Forward);
+
     // TRIGGER CONTROLS (no turn yet)
     /*
      * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
@@ -883,12 +929,14 @@ public class Robot extends TimedRobot {
     // AMP
     // INTAKE
     if (controller2.getLeftBumper()) {
-      ampLight.setSwitchableChannel(true);
-      amp.set(ControlMode.PercentOutput, -0.5);
+      //ampLight.setSwitchableChannel(true);
+      //amp.set(ControlMode.PercentOutput, -0.5);
     }
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
-      amp.set(ControlMode.PercentOutput, 0.5);
+      //amp.set(ControlMode.PercentOutput, 0.5);
+      shooterA.setControl(velocitySlow.withVelocity(35));
+      shooterB.setControl(velocitySlow.withVelocity(35));
     }
     // Amp-Light Toggle
     else if (controller2.getYButton()) {
@@ -898,7 +946,6 @@ public class Robot extends TimedRobot {
       ampLight.setSwitchableChannel(false);
     }
     // HANGING
-    // PART TWO
     if (controller2.getLeftY() >= 0.2) {
       hanger.set(ControlMode.PercentOutput, 0.75);
     } else if (controller2.getLeftY() <= -0.2) {
@@ -949,3 +996,4 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
   }
 }
+
