@@ -276,6 +276,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("left motor A get", driveLeftA.get());
+    SmartDashboard.putNumber("right motor A get", driveRightA.get());
+    SmartDashboard.putNumber("left motor B get", driveLeftB.get());
+    SmartDashboard.putNumber("right motor B get", driveRightB.get());
+    SmartDashboard.putNumber("left motor A out curr", driveLeftA.getOutputCurrent());
+    SmartDashboard.putNumber("right motor A out curr", driveRightA.getOutputCurrent());
+    SmartDashboard.putNumber("left motor B out curr", driveLeftB.getOutputCurrent());
+    SmartDashboard.putNumber("right motor B out curr", driveRightB.getOutputCurrent());
+    SmartDashboard.putNumber("left motor A app out", driveLeftA.getAppliedOutput());
+    SmartDashboard.putNumber("right motor A app out", driveRightA.getAppliedOutput());
+    SmartDashboard.putNumber("left motor B app out", driveLeftB.getAppliedOutput());
+    SmartDashboard.putNumber("right motor B app out", driveRightB.getAppliedOutput());
+    SmartDashboard.putNumber("left motor A faults", driveLeftA.getFaults());
+    SmartDashboard.putNumber("right motor A faults", driveRightA.getFaults());
+    SmartDashboard.putNumber("left motor B faults", driveLeftB.getFaults());
+    SmartDashboard.putNumber("right motor B faults", driveRightB.getFaults());
+    SmartDashboard.putString("left motor A last err", driveLeftA.getLastError().name());
+    SmartDashboard.putString("right motor A last err", driveRightA.getLastError().name());
+    SmartDashboard.putString("left motor B last err", driveLeftB.getLastError().name());
+    SmartDashboard.putString("right motor B last err", driveRightB.getLastError().name());
+
     SmartDashboard.putNumber("leftEncoder distance", leftEncoder.getDistance());
     SmartDashboard.putNumber("leftEncoder get", leftEncoder.get());
     SmartDashboard.putNumber("leftEncoder raw", leftEncoder.getRaw());
@@ -841,6 +862,9 @@ public class Robot extends TimedRobot {
   /* This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    
+    driveLeftB.follow(driveLeftA);
+    driveRightB.follow(driveRightA);
     leftEncoder.reset();
     rightEncoder.reset();
     gyro.reset();
@@ -876,14 +900,15 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber(" turning speed", turn);
     SmartDashboard.putNumber(" speed", speed);
     SmartDashboard.putNumber(" drive mode", driveMode);
+    
 
     // JOYSTICK CONTROLS + TRIGGER
-    SmartDashboard.putNumber("left speed", (Forward / speed) + turn);
-    SmartDashboard.putNumber("right speed", (Forward / speed) - turn);
+    SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
+    SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
     driveLeftA.set( ((turn / speed) - Forward));
-    driveLeftB.set( ((turn / speed) - Forward));
+    // driveLeftB.set( ((turn / speed) - Forward));
     driveRightA.set( (turn / speed) + Forward);
-    driveRightB.set( (turn / speed) + Forward);
+    //driveRightB.set( (turn / speed) + Forward);
 
     // TRIGGER CONTROLS (no turn yet)
     /*
@@ -975,16 +1000,10 @@ public class Robot extends TimedRobot {
   /* This function is called periodically during test mode. */
   @Override
   public void testPeriodic() { // what is this for?
-    double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
-    if (autoTimeElapsed < 1.125) {
-      driveForward(0.5, 1.125);
-    } else if (autoTimeElapsed < 2) {
-      drive(-.5, -.4, 2);
-    } else if (autoTimeElapsed < 3) {
-      drive(-1, .5, 3);
-    } else {
-      driveForward(0, 0);
-    }
+    driveLeftA.set( 0.5); 
+    driveLeftB.set( 0.5 );
+    driveRightA.set( 0.5 );
+    driveRightB.set( 0.5);
   }
 
   /* This function is called once when the robot is first started up. */
