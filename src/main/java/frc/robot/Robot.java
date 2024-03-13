@@ -274,6 +274,9 @@ public class Robot extends TimedRobot {
     driveLeftB.enableVoltageCompensation(10.0);
     driveRightB.enableVoltageCompensation(10.0);
 
+    driveLeftA.setOpenLoopRampRate(0.5);
+    driveRightA.setOpenLoopRampRate(0.5);
+
     driveLeftA.follow(ExternalFollower.kFollowerDisabled, 0);
     driveRightA.follow(ExternalFollower.kFollowerDisabled, 0);
 
@@ -991,9 +994,9 @@ public class Robot extends TimedRobot {
     }
     // HANGING
     if (controller2.getLeftY() >= 0.2) {
-      hanger.set(ControlMode.PercentOutput, 0.75);
-    } else if (controller2.getLeftY() <= -0.2) {
       hanger.set(ControlMode.PercentOutput, -0.75);
+    } else if (controller2.getLeftY() <= -0.2) {
+      hanger.set(ControlMode.PercentOutput, 0.75);
     } else {
       hanger.set(ControlMode.PercentOutput, 0);
     }
