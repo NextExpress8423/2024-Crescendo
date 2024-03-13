@@ -20,6 +20,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.ExternalFollower;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 //import edu.wpi.first.cscore.UsbCamera;
@@ -101,13 +102,13 @@ public class Robot extends TimedRobot {
   // PowerDistribution ampLight = new PowerDistribution(0, ModuleType.kCTRE);
   PowerDistribution ampLight = new PowerDistribution(1, ModuleType.kRev);
 
-  DifferentialDrive differentialDrive = new DifferentialDrive(
-      (value) -> {
-        driveLeftA.set( value);
-      },
-      (value) -> {
-        driveRightA.set( -value);
-      });
+  // DifferentialDrive differentialDrive = new DifferentialDrive(
+  //     (value) -> {
+  //       driveLeftA.set( value);
+  //     },
+  //     (value) -> {
+  //       driveRightA.set( -value);
+  //     });
 
 
   public Robot() {
@@ -214,12 +215,12 @@ public class Robot extends TimedRobot {
     double error = direction - gyro.getAngle();
 
     // Turns the robot to face the desired direction
-    differentialDrive.tankDrive(constrain(kP * error, maxSpeed, -maxSpeed),
-        constrain(-kP * error, maxSpeed, -maxSpeed));
+    // differentialDrive.tankDrive(constrain(kP * error, maxSpeed, -maxSpeed),
+    //     constrain(-kP * error, maxSpeed, -maxSpeed));
   }
 
   public void turnMove(double left, double right) {
-    differentialDrive.tankDrive(left, right);
+    // differentialDrive.tankDrive(left, right);
   }
 
   @Override
@@ -262,6 +263,22 @@ public class Robot extends TimedRobot {
     rightEncoder.reset();
 
     gyro.reset();
+
+    driveLeftA.restoreFactoryDefaults();
+    driveRightA.restoreFactoryDefaults();
+    driveLeftB.restoreFactoryDefaults();
+    driveRightB.restoreFactoryDefaults();
+
+    driveLeftA.enableVoltageCompensation(10.0);
+    driveRightA.enableVoltageCompensation(10.0);
+    driveLeftB.enableVoltageCompensation(10.0);
+    driveRightB.enableVoltageCompensation(10.0);
+
+    driveLeftA.follow(ExternalFollower.kFollowerDisabled, 0);
+    driveRightA.follow(ExternalFollower.kFollowerDisabled, 0);
+
+    driveLeftB.follow(driveLeftA);
+    driveRightB.follow(driveRightB);
 
   }
 
@@ -865,6 +882,7 @@ public class Robot extends TimedRobot {
     
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
+    
     leftEncoder.reset();
     rightEncoder.reset();
     gyro.reset();
@@ -891,9 +909,9 @@ public class Robot extends TimedRobot {
     } 
 
     if (Math.abs(Forward) < 0.25) {
-      turnSpeed = 1.0;
+      turnSpeed = 1.5;
     } else {
-      turnSpeed = 0.5;
+      turnSpeed = 1.0;
     }
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", -Forward);
