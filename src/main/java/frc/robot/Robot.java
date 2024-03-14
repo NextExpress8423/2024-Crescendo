@@ -353,6 +353,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
+
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
     m_autoSelected = m_chooser.getSelected();
@@ -374,6 +376,10 @@ public class Robot extends TimedRobot {
   /* This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+     rightPosition = -driveRightA.getEncoder().getPosition();
+    leftPosition = driveLeftA.getEncoder().getPosition();
+    
     System.out.println(m_autoSelected);
     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
     double autoTimeElapsedb = autoTimeElapsed - wait;
