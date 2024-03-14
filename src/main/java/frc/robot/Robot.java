@@ -317,8 +317,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("right motor A last err", driveRightA.getLastError().name());
     SmartDashboard.putString("left motor B last err", driveLeftB.getLastError().name());
     SmartDashboard.putString("right motor B last err", driveRightB.getLastError().name());
-    SmartDashboard.putNumber("leftEncoder distance", driveLeftA.getEncoder().getPosition());
-    SmartDashboard.putNumber("rightEncoder distance", driveRightA.getEncoder().getPosition());
     SmartDashboard.putNumber("Right Position Var", rightPosition);
     SmartDashboard.putNumber("Left Position Var", leftPosition);
 
