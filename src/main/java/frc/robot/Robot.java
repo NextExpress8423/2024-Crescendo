@@ -95,11 +95,9 @@ public class Robot extends TimedRobot {
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
-  // ENCODER STUFF
-  // Creates an encoder on DIO ports 0 and 1
-  Encoder leftEncoder = new Encoder(2, 3);
-  Encoder rightEncoder = new Encoder(0, 1);
+
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
   // AMPLIGHTS
   // PowerDistribution ampLight = new PowerDistribution();
   // PowerDistribution ampLight = new PowerDistribution(0, ModuleType.kCTRE);
@@ -260,7 +258,6 @@ public class Robot extends TimedRobot {
     shooterB.getConfigurator().apply(configs);
 
     driveRightA.getEncoder().setPositionConversionFactor((6.0 * Math.PI / 12.0));
-    leftEncoder.reset();
     driveLeftA.getEncoder().setPositionConversionFactor((6.0 * Math.PI / 12.0));
 
     gyro.reset();
@@ -367,13 +364,6 @@ public class Robot extends TimedRobot {
 
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
-    // ENCODER STUFF
-    // Configures the encoder's distance-per-pulse
-    // The robot moves forward 1 foot per encoder rotation
-    // There are 256 pulses per encoder rotation
-    // NOW NOT ACCURATE
-    leftEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
-    rightEncoder.setDistancePerPulse((1.6875 * 6.0 * 3.14159 / 12.0) / (360.0));
 
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
@@ -508,7 +498,7 @@ public class Robot extends TimedRobot {
     if (state == "four") {
       intake.set(0);
       tankDrive(0.6, 0.525);
-      if (leftPosition < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition < 1.45 && rightPosition < 1.45) {
         tankDrive(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -547,7 +537,7 @@ public class Robot extends TimedRobot {
     if (state == "eight") {
       tankDrive(0.9, 0.45);
       intake.set(0);
-      if (leftPosition < 3.5 && rightEncoder.getDistance() < 3.5) {
+      if (leftPosition < 3.5 && rightPosition < 3.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -600,7 +590,7 @@ public class Robot extends TimedRobot {
     if (state == "four") {
       intake.set(0);
       tankDrive(0.6, 0.525);
-      if (leftPosition < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition < 1.45 && rightPosition < 1.45) {
         tankDrive(0, 0);
         state = "five";
         wait = autoTimeElapsed + 0.5;
@@ -634,14 +624,14 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       tankDrive(-0.9, -0.4);
       intake.set(-0.5);
-      if (leftPosition < 1.45 && rightEncoder.getDistance() < 1.45) {
+      if (leftPosition < 1.45 && rightPosition < 1.45) {
         state = "eight";
       }
     }
     if (state == "eight") {
       tankDrive(0.9, 0.4);
       intake.set(0);
-      if (leftPosition < 0.5 && rightEncoder.getDistance() < 0.5) {
+      if (leftPosition < 0.5 && rightPosition < 0.5) {
         state = "nine";
         wait = autoTimeElapsed + 1;
       }
@@ -669,7 +659,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       tankDrive(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftPosition > 8 && rightEncoder.getDistance() > 8) {
+      if (leftPosition > 8 && rightPosition > 8) {
         tankDrive(0, 0);
         state = "twelve";
       }
@@ -677,7 +667,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       tankDrive(0.75, 0.15);
       intake.set(-0.5);
-      if (leftPosition < 1 && rightEncoder.getDistance() < 1) {
+      if (leftPosition < 1 && rightPosition < 1) {
         tankDrive(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
@@ -715,7 +705,7 @@ public class Robot extends TimedRobot {
     if (state == "eleven") {
       tankDrive(-0.75, -0.15);
       intake.set(-0.5);
-      if (leftPosition > 8 && rightEncoder.getDistance() > 8) {
+      if (leftPosition > 8 && rightPosition > 8) {
         tankDrive(0, 0);
         state = "twelve";
       }
@@ -723,7 +713,7 @@ public class Robot extends TimedRobot {
     if (state == "twelve") {
       tankDrive(0.75, 0.15);
       intake.set(-0.5);
-      if (leftPosition < 1 && rightEncoder.getDistance() < 1) {
+      if (leftPosition < 1 && rightPosition < 1) {
         tankDrive(0, 0);
         state = "thirteen";
         wait = autoTimeElapsed + 1;
