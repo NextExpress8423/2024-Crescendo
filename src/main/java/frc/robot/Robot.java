@@ -1,8 +1,3 @@
-//NOTE SCORING AUTONOMOUS PROGRAM
-//NOTE SCORING AUTONOMOUS PROGRAM
-//________________________________________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//--------------------------------------------------------------------------------------------------------
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -76,10 +71,6 @@ public class Robot extends TimedRobot {
   CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
   CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
-  // VictorSPX driveRightA = new VictorSPX(1);
-  // VictorSPX driveRightB = new VictorSPX(2);
-  // VictorSPX driveLeftA = new VictorSPX(8);
-  // VictorSPX driveLeftB = new VictorSPX(9);
   double turn = controller1.getRightX() / turnSpeed;
   TalonFX shooterA = new TalonFX(4);
   TalonFX shooterB = new TalonFX(3);
@@ -122,7 +113,7 @@ public class Robot extends TimedRobot {
   // use turnLeft(incert motor power here) to turn left
   public void turnRight(double speed, double endTime) {
     drive(speed, -speed, endTime);
-    
+
   }
 
   // use drive(incert left speed here, incert right speed here) to drive (tank
@@ -137,10 +128,8 @@ public class Robot extends TimedRobot {
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    driveLeftA.set( -leftSpeed);
-    driveLeftB.set( -leftSpeed);
-    driveRightA.set( rightSpeed);
-    driveRightB.set( rightSpeed);
+    driveLeftA.set(-leftSpeed);
+    driveRightA.set(rightSpeed);
   }
 
   public double constrain(double number, double maximum, double minimum) {
@@ -158,9 +147,10 @@ public class Robot extends TimedRobot {
     double error = direction - gyro.getAngle();
 
     // Turns the robot to face the desired direction
-    tankDrive(constrain(kP * error, maxSpeed, -maxSpeed),constrain(-kP * error, maxSpeed, -maxSpeed));
-         
+    tankDrive(constrain(kP * error, maxSpeed, -maxSpeed), constrain(-kP * error, maxSpeed, -maxSpeed));
+
   }
+
   @Override
   public void robotInit() {
     CameraServer.startAutomaticCapture(0);
@@ -172,12 +162,13 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("double note auton!! [Speaker]", kCustomAuto5);
     m_chooser.addOption("Slanted Duel Note", kCustomAuto9);
     m_chooser.addOption(oneNoteAutonSpeaker, oneNoteAutonSpeaker);
-   // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]", kCustomAuto7);
-    //m_chooser.addOption("[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]", kCustomAuto8);
+    // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
+    // USE!]", kCustomAuto7);
+    // m_chooser.addOption("[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT
+    // USE!]", kCustomAuto8);
     // m_chooser.addOption("encoder test", kCustomAuto6);
     SmartDashboard.putData("Auto choices", m_chooser);
-    
-   
+
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = 0.101;
     configs.Slot0.kD = 0.01;
@@ -202,7 +193,6 @@ public class Robot extends TimedRobot {
     driveRightA.restoreFactoryDefaults();
     driveLeftB.restoreFactoryDefaults();
     driveRightB.restoreFactoryDefaults();
-    
 
     driveLeftA.enableVoltageCompensation(10.0);
     driveRightA.enableVoltageCompensation(10.0);
@@ -224,7 +214,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     rightPosition = -driveRightA.getEncoder().getPosition();
     leftPosition = driveLeftA.getEncoder().getPosition();
-   
+
     SmartDashboard.putNumber("Right Position Var", rightPosition);
     SmartDashboard.putNumber("Left Position Var", leftPosition);
 
@@ -232,10 +222,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("gyro rate", gyro.getRate());
     SmartDashboard.putString("state", state);
 
-
-    
-
- 
   }
 
   /*
@@ -257,7 +243,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
     m_autoSelected = m_chooser.getSelected();
@@ -269,7 +254,7 @@ public class Robot extends TimedRobot {
 
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
- 
+
     gyro.reset();
     state = "init";
 
@@ -279,7 +264,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-     rightPosition = -driveRightA.getEncoder().getPosition();
+    rightPosition = -driveRightA.getEncoder().getPosition();
     leftPosition = driveLeftA.getEncoder().getPosition();
 
     System.out.println(m_autoSelected);
@@ -290,7 +275,7 @@ public class Robot extends TimedRobot {
       stopEverything();
       return;
     }
-    if(state == "fin"){
+    if (state == "fin") {
       stopEverything();
       return;
     }
@@ -303,48 +288,49 @@ public class Robot extends TimedRobot {
       runQuadrupleNoteShoot(autoTimeElapsed);
     } else if (m_autoSelected == oneNoteAutonSpeaker) {
       runOneNoteAuton(autoTimeElapsed);
-    } else if (m_autoSelected == "Slanted Duel Note"){
+    } else if (m_autoSelected == "Slanted Duel Note") {
       runTwoNoteAutonSide(autoTimeElapsed);
-    }
-     else {
+    } else {
       checkOldRoutines(autoTimeElapsed);
     }
   }
-  public void stopEverything(){
-      tankDrive(0, 0);
+
+  public void stopEverything() {
+    tankDrive(0, 0);
+    shooterA.setControl(velocity.withVelocity(0));
+    shooterB.setControl(velocity.withVelocity(0));
+    intake.set(0);
+  }
+
+  public void runDoubleNoteAuton(double autoTimeElapsed) {
+    if (state == "init") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      tankDrive(-0.6, -0.4);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(-0.76, -0.4);
+      intake.set(-0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
+      if (rightPosition > 10) {
+        state = "four";
+      }
+    }
+    if (state == "four") {
       intake.set(0);
-  }
-  public void runDoubleNoteAuton(double autoTimeElapsed){
-    if (state == "init") {
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (autoTimeElapsed > 1) {
-          state = "two";
-        }
-      }
-      if (state == "two") {
-        tankDrive(-0.6, -0.4);
-        shooterA.setControl(velocity.withVelocity(1500));
-        shooterB.setControl(velocity.withVelocity(1200));
-        if (autoTimeElapsed > 2) {
-          state = "three";
-        }
-      }
-      if (state == "three") {
-        tankDrive(-0.76, -0.4);
-        intake.set(-0.5);
-        shooterA.setControl(velocity.withVelocity(0));
-        shooterB.setControl(velocity.withVelocity(0));
-        if (rightPosition > 10) {
-          state = "four";
-        }
-      }
-      if (state == "four") {
-        intake.set(0);
-        tankDrive(0.6, 0.5);
-        if (rightPosition < 1.45) {
+      tankDrive(0.6, 0.5);
+      if (rightPosition < 1.45) {
         if (rightPosition < 3.5) {
           tankDrive(0, 0);
           state = "five";
@@ -371,6 +357,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   public void runTripleNoteAuton(double autoTimeElapsed) {
     if (state == "init") {
       shooterA.setControl(velocity.withVelocity(1500));
@@ -462,6 +449,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   public void runQuadrupleNoteShoot(double autoTimeElapsed) {
     if (state == "init") {
       shooterA.setControl(velocity.withVelocity(1500));
@@ -635,6 +623,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   public void runOneNoteAuton(double autoTimeElapsed) {
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
@@ -664,6 +653,7 @@ public class Robot extends TimedRobot {
     }
 
   }
+
   public void checkOldRoutines(double autoTimeElapsed) {
     if (m_autoSelected == "blue left") {
       if (autoTimeElapsed < 1.125) {
@@ -757,6 +747,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   public void runTwoNoteAutonSide(double autoTimeElapsed) {
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
@@ -787,14 +778,14 @@ public class Robot extends TimedRobot {
     }
     if (state == "four") {
       point(-85, 0.75);
-      if (gyro.getAngle() < -80){
+      if (gyro.getAngle() < -80) {
         state = "five";
       }
     }
-    if(state == "five"){
+    if (state == "five") {
       tankDrive(-0.5, -0.5);
       intake.set(-0.5);
-      if(leftPosition > 11){
+      if (leftPosition > 11) {
         state = "six";
         intake.set(0);
         tankDrive(0, 0);
@@ -806,10 +797,10 @@ public class Robot extends TimedRobot {
   /* This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    
+
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
-    
+
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
     gyro.reset();
@@ -831,7 +822,7 @@ public class Robot extends TimedRobot {
       speed = 2;
     } else {
       speed = 5;
-    } 
+    }
 
     if (Math.abs(Forward) < 0.25) {
       turnSpeed = 1.5;
@@ -843,14 +834,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber(" turning speed", turn);
     SmartDashboard.putNumber(" speed", speed);
     SmartDashboard.putNumber(" drive mode", driveMode);
-    
 
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    driveLeftA.set( ((turn / speed) - Forward));
-    driveRightA.set( (turn / speed) + Forward);
-   
+    driveLeftA.set(((turn / speed) - Forward));
+    driveRightA.set((turn / speed) + Forward);
 
     // TRIGGER CONTROLS (no turn yet)
     /*
@@ -892,7 +881,7 @@ public class Robot extends TimedRobot {
     }
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
-      //amp.set(ControlMode.PercentOutput, 0.5);
+      // amp.set(ControlMode.PercentOutput, 0.5);
       shooterA.setControl(velocitySlow.withVelocity(35));
       shooterB.setControl(velocitySlow.withVelocity(35));
     }
@@ -925,10 +914,6 @@ public class Robot extends TimedRobot {
   /* This function is called periodically during test mode. */
   @Override
   public void testPeriodic() { // what is this for?
-    driveLeftA.set( 0.5); 
-    driveLeftB.set( 0.5 );
-    driveRightA.set( 0.5 );
-    driveRightB.set( 0.5);
   }
 
   /* This function is called once when the robot is first started up. */
