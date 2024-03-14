@@ -218,8 +218,8 @@ public class Robot extends TimedRobot {
     double error = direction - gyro.getAngle();
 
     // Turns the robot to face the desired direction
-    // differentialDrive.tankDrive(constrain(kP * error, maxSpeed, -maxSpeed),
-    //     constrain(-kP * error, maxSpeed, -maxSpeed));
+    tankDrive(constrain(kP * error, maxSpeed, -maxSpeed),constrain(-kP * error, maxSpeed, -maxSpeed));
+         //constrain(-kP * error, maxSpeed, -maxSpeed);
   }
 
   public void turnMove(double left, double right) {
@@ -259,11 +259,9 @@ public class Robot extends TimedRobot {
     shooterA.getConfigurator().apply(configs);
     shooterB.getConfigurator().apply(configs);
 
-    driveRightA.getEncoder().setPositionConversionFactor((40 * 6.0 * 3.14159 / 12.0) / (360.0));
+    driveRightA.getEncoder().setPositionConversionFactor((6.0 * Math.PI / 12.0));
     leftEncoder.reset();
-    driveLeftA.getEncoder().setPositionConversionFactor((40 * 6.0 * 3.14159 / 12.0) / (360.0));
-    
-    rightEncoder.reset();
+    driveLeftA.getEncoder().setPositionConversionFactor((6.0 * Math.PI / 12.0));
 
     gyro.reset();
 
@@ -285,7 +283,7 @@ public class Robot extends TimedRobot {
     driveRightA.follow(ExternalFollower.kFollowerDisabled, 0);
 
     driveLeftB.follow(driveLeftA);
-    driveRightB.follow(driveRightB);
+    driveRightB.follow(driveRightA);
 
   }
 
@@ -916,15 +914,17 @@ public class Robot extends TimedRobot {
       }
     }
     if (state == "four") {
-      point(-85, 0.75);
+      point(85, 0.75);
       if (gyro.getAngle() < -80){
         state = "five";
       }
     }
     if(state == "five"){
       tankDrive(-0.5, -0.5);
+      intake.set(-0.5);
       if(leftPosition > 11){
         state = "six";
+        intake.set(0);
         tankDrive(0, 0);
       }
     }
