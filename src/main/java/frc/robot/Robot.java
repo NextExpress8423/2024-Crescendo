@@ -838,7 +838,7 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    driveLeftA.set(((turn / speed) - Forward));
+    driveLeftA.set(((turn / speed) - Forward)*1.45);
     driveRightA.set((turn / speed) + Forward);
 
     // TRIGGER CONTROLS (no turn yet)
