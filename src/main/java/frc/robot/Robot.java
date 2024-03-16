@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto9 = "Slanted Duel Note";
+  private static final String kCustomAuto10 = "Slanted Triple Note";
   private double speed = 5.0;
   private double turnSpeed = 1.5;
   private double driveMode = 4;
@@ -154,13 +155,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     CameraServer.startAutomaticCapture(0);
-    m_chooser.addOption("blue left", kDefaultAuto);
-    m_chooser.addOption("blue right", kCustomAuto);
+    m_chooser.addOption("red left", kDefaultAuto);
+    m_chooser.addOption("red right", kCustomAuto);
     m_chooser.addOption("straight", kCustomAuto2);
-    m_chooser.addOption("red left", kDefaultAuto3);
-    m_chooser.addOption("red right", kCustomAuto4);
+    m_chooser.addOption("blue left", kDefaultAuto3);
+    m_chooser.addOption("blue right", kCustomAuto4);
     m_chooser.addOption("double note auton!! [Speaker]", kCustomAuto5);
     m_chooser.addOption("Slanted Duel Note", kCustomAuto9);
+    m_chooser.addOption("Slanted Triple Note", kCustomAuto10);
     m_chooser.addOption(oneNoteAutonSpeaker, oneNoteAutonSpeaker);
     // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
     // USE!]", kCustomAuto7);
@@ -290,6 +292,9 @@ public class Robot extends TimedRobot {
       runOneNoteAuton(autoTimeElapsed);
     } else if (m_autoSelected == "Slanted Duel Note") {
       runTwoNoteAutonSide(autoTimeElapsed);
+    }
+    else if (m_autoSelected == "Slanted Triple Note!"){
+    runSlantedTripleNote(autoTimeElapsed);
     } else {
       checkOldRoutines(autoTimeElapsed);
     }
@@ -749,7 +754,7 @@ public class Robot extends TimedRobot {
   }
 
   public void runTwoNoteAutonSide(double autoTimeElapsed) {
-    System.out.println("Entering oneNoteAuto block");
+    System.out.println("entering two note slanted block");
     if (state == "init") {
       System.out.println("Running init state");
       shooterA.setControl(velocity.withVelocity(1500));
@@ -853,17 +858,141 @@ public class Robot extends TimedRobot {
           tankDrive(0, 0);
         }
        }
-    //  if (state == "five") {
-    //    tankDrive(-0.725, -0.5); //-0.725 is -0.5*1.45, you may not do multiplacation to get values.
-    //    intake.set(-0.5);
-    //    if (leftPosition > 50) {
-    //      state = "six";
-    //      intake.set(0);
-    //      tankDrive(0, 0);
-    //    }
-    //  }
-
   }
+  public void runSlantedTripleNote(double autoTimeElapsed) {
+        System.out.println("entering triple note slanted block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      //tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+       if (state == "three") {
+       tankDrive(-0.5, -0.5);
+       shooterA.setControl(velocity.withVelocity(0));
+       shooterB.setControl(velocity.withVelocity(0));
+       if (driveLeftA.getEncoder().getPosition() > 1 && driveRightA.getEncoder().getPosition() < -1) {
+         state = "four";
+         tankDrive(0, 0);
+       }
+     }
+      if (state == "four") {
+       tankDrive(0.5, -0.5);
+       shooterA.setControl(velocity.withVelocity(0));
+       shooterB.setControl(velocity.withVelocity(0));
+       if (driveRightA.getEncoder().getPosition() < -11.25) {
+         state = "five";
+         wait = autoTimeElapsed + 1;
+         tankDrive(0, 0);
+       }
+     }
+
+      if (state == "five") {
+        tankDrive(0, 0);
+        if (wait < autoTimeElapsed) {
+          state = "six";
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "six") {
+        tankDrive(-0.25, -0.25);
+        intake.set(-0.5);
+        if (rightPosition > 36.5) {
+          state = "seven";
+          wait = autoTimeElapsed + 1;
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "seven") { //BEGIN TO GO IN REVERSE
+        tankDrive(0, 0);
+        intake.set(-0.75);
+        if (autoTimeElapsed > wait) { 
+          state = "eight";
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "eight") {
+        tankDrive(0.25, 0.25);
+        intake.set(0);
+        if (driveRightA.getEncoder().getPosition() > -11.25) { 
+          state = "nine";
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "nine") { //SHOOT SECOND NOTE!!! YEAH THE HOME STRETCH, wait no turn
+        tankDrive(-0.5, 0.5);
+        if (driveRightA.getEncoder().getPosition() > -4.0) { 
+          state = "ten";
+          intake.set(0);
+          tankDrive(0, 0);
+          wait = autoTimeElapsed + 1;
+        }
+       }
+       if (state == "ten") { //SHOOT SECOND NOTE? nah, part one.
+        tankDrive(0, 0);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(0));
+        if (autoTimeElapsed > wait) { 
+          state = "eleven";
+          intake.set(0);
+          tankDrive(0, 0);
+          wait = autoTimeElapsed + 1;
+        }
+       }
+       if (state == "eleven") { //SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
+        tankDrive(0, 0);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(1200));
+        intake.set(-0.5);
+        if (autoTimeElapsed > wait) { 
+          state = "twelve";
+          wait = autoTimeElapsed + 1;
+          shooterA.setControl(velocity.withVelocity(0));
+          shooterB.setControl(velocity.withVelocity(0));
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "twelve") { //get third note
+        tankDrive(0, 0);
+        if (autoTimeElapsed > wait) { 
+          state = "thirteen";
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "thirteen") { //drive forward
+        tankDrive(-0.5, -0.5);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(0));
+        if (rightPosition > 1) { 
+          state = "fourteen";
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+      //  if (state == "fourteen") { //turn A
+      //   tankDrive(0.5, -0.5);
+      //   if (rightPosition > 11.25) { 
+      //     state = "fifteen";
+      //     intake.set(0);
+      //     tankDrive(0, 0);
+      //   }
+      //  }
+
+       }
 
   /* This function is called once when teleop is enabled. */
   @Override
