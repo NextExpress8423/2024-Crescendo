@@ -760,37 +760,108 @@ public class Robot extends TimedRobot {
     }
     if (state == "two") {
       System.out.println("Running two state");
-      tankDrive(-0.5, -0.5);
+      //tankDrive(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
       if (autoTimeElapsed > 2) {
         state = "three";
       }
     }
-    if (state == "three") {
-      tankDrive(-0.5, -0.5);
-      shooterA.setControl(velocity.withVelocity(0));
-      shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition > 5 && rightPosition > 5) {
-        state = "four";
+       if (state == "three") {
+       tankDrive(-0.5, -0.5);
+       shooterA.setControl(velocity.withVelocity(0));
+       shooterB.setControl(velocity.withVelocity(0));
+       if (driveLeftA.getEncoder().getPosition() > 1 && driveRightA.getEncoder().getPosition() < -1) {
+         state = "four";
+         tankDrive(0, 0);
+       }
+     }
+      if (state == "four") {
+       tankDrive(0.5, -0.5);
+       shooterA.setControl(velocity.withVelocity(0));
+       shooterB.setControl(velocity.withVelocity(0));
+       if (driveRightA.getEncoder().getPosition() < -11.25) {
+         state = "five";
+         wait = autoTimeElapsed + 1;
+         tankDrive(0, 0);
+       }
+     }
+
+      if (state == "five") {
         tankDrive(0, 0);
-      }
-    }
-    if (state == "four") {
-      point(-85, 0.75);
-      if (gyro.getAngle() < -80) {
-        state = "five";
-      }
-    }
-    if (state == "five") {
-      tankDrive(-0.5, -0.5);
-      intake.set(-0.5);
-      if (leftPosition > 11) {
-        state = "six";
+        if (wait < autoTimeElapsed) {
+          state = "six";
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "six") {
+        tankDrive(-0.25, -0.25);
+        intake.set(-0.5);
+        if (rightPosition > 36.5) {
+          state = "seven";
+          wait = autoTimeElapsed + 1;
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "seven") { //BEGIN TO GO IN REVERSE
+        tankDrive(0, 0);
+        intake.set(-0.75);
+        if (autoTimeElapsed > wait) { 
+          state = "eight";
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "eight") {
+        tankDrive(0.25, 0.25);
         intake.set(0);
+        if (driveRightA.getEncoder().getPosition() > -11.25) { 
+          state = "nine";
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+       if (state == "nine") { //SHOOT SECOND NOTE!!! YEAH THE HOME STRETCH, wait no turn
+        tankDrive(-0.5, 0.5);
+        if (driveRightA.getEncoder().getPosition() > -4.0) { 
+          state = "ten";
+          intake.set(0);
+          tankDrive(0, 0);
+          wait = autoTimeElapsed + 1;
+        }
+       }
+       if (state == "ten") { //SHOOT SECOND NOTE? nah, part one.
         tankDrive(0, 0);
-      }
-    }
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(0));
+        if (autoTimeElapsed > wait) { 
+          state = "eleven";
+          intake.set(0);
+          tankDrive(0, 0);
+          wait = autoTimeElapsed + 1;
+        }
+       }
+       if (state == "eleven") { //SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
+        tankDrive(0, 0);
+        shooterA.setControl(velocity.withVelocity(1500));
+        shooterB.setControl(velocity.withVelocity(1200));
+        intake.set(-0.5);
+        if (autoTimeElapsed > wait) { 
+          state = "FIN!!! YEAH, WHA-HOO!!!";
+          shooterA.setControl(velocity.withVelocity(0));
+          shooterB.setControl(velocity.withVelocity(0));
+          intake.set(0);
+          tankDrive(0, 0);
+        }
+       }
+    //  if (state == "five") {
+    //    tankDrive(-0.725, -0.5); //-0.725 is -0.5*1.45, you may not do multiplacation to get values.
+    //    intake.set(-0.5);
+    //    if (leftPosition > 50) {
+    //      state = "six";
+    //      intake.set(0);
+    //      tankDrive(0, 0);
+    //    }
+    //  }
 
   }
 
@@ -830,7 +901,7 @@ public class Robot extends TimedRobot {
       turnSpeed = 1.0;
     }
     // DROVE DATA
-    SmartDashboard.putNumber(" drive speed", -Forward);
+    SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber(" turning speed", turn);
     SmartDashboard.putNumber(" speed", speed);
     SmartDashboard.putNumber(" drive mode", driveMode);
