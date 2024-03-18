@@ -57,7 +57,8 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto9 = "Slanted Duel Note";
-  private static final String kCustomAutoRightSpeaker2Note = "right side epaker!";
+  private static final String kCustomAutoRightSpeaker2Note = "right side speaker!";
+  private static final String kCustomAutoRightSpeaker3Note = "right side speaker! 3 note";
   private double speed = 5.0;
   private double turnSpeed = 1.5;
   private double driveMode = 4;
@@ -162,7 +163,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("blue right", kCustomAuto4);
     m_chooser.addOption("double note auton!! [Speaker]", kCustomAuto5);
     m_chooser.addOption("Slanted Duel Note", kCustomAuto9);
-    m_chooser.addOption("Slanted Triple Note", kCustomAutoRightSpeaker2Note);
+    m_chooser.addOption("Slanted Two Note", kCustomAutoRightSpeaker2Note);
+    m_chooser.addOption("Slanted Triple Note", kCustomAutoRightSpeaker3Note);
     m_chooser.addOption(oneNoteAutonSpeaker, oneNoteAutonSpeaker);
     // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
     // USE!]", kCustomAuto7);
@@ -196,10 +198,10 @@ public class Robot extends TimedRobot {
     driveLeftB.restoreFactoryDefaults();
     driveRightB.restoreFactoryDefaults();
 
-    driveLeftA.enableVoltageCompensation(10.0);
-    driveRightA.enableVoltageCompensation(10.0);
-    driveLeftB.enableVoltageCompensation(10.0);
-    driveRightB.enableVoltageCompensation(10.0);
+    driveLeftA.enableVoltageCompensation(8.0);
+    driveRightA.enableVoltageCompensation(8.0);
+    driveLeftB.enableVoltageCompensation(8.0);
+    driveRightB.enableVoltageCompensation(8.0);
 
     driveLeftA.setOpenLoopRampRate(0.5);
     driveRightA.setOpenLoopRampRate(0.5);
@@ -272,7 +274,7 @@ public class Robot extends TimedRobot {
     System.out.println(m_autoSelected);
     double autoTimeElapsed = Timer.getFPGATimestamp() - autoStart;
     double autoTimeElapsedb = autoTimeElapsed - wait;
-    SmartDashboard.putNumber("autoTimeElapsedB", autoTimeElapsedb);
+    SmartDashboard.putNumber("autoTimeElapsed", autoTimeElapsed);
     if (autoTimeElapsed >= 15) {
       stopEverything();
       return;
@@ -294,7 +296,11 @@ public class Robot extends TimedRobot {
       runTwoNoteAutonSide(autoTimeElapsed);
     } else if (m_autoSelected.equals(kCustomAutoRightSpeaker2Note)) {
       runRightSpeaker2Note(autoTimeElapsed);
-    } else {
+    }
+    else if (m_autoSelected.equals(kCustomAutoRightSpeaker3Note)) {
+    runRightSpeaker3Note(autoTimeElapsed);
+    }
+      else {
       checkOldRoutines(autoTimeElapsed);
     }
   }
@@ -965,6 +971,115 @@ public class Robot extends TimedRobot {
       }
     }
   }
+  public void runRightSpeaker3Note(double autoTimeElapsed) {
+    System.out.println("entering triple note slanted block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftPosition > 1 && rightPosition < 1) {
+        state = "four";
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "four") {
+      tankDrive(-0.5, 0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftPosition > 8.25) {
+        state = "five";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "five") {
+      tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(-0.5);
+      if (leftPosition > 35) {
+        state = "six";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "six") {
+      tankDrive(0, 0);
+      intake.set(-0.5);
+      if (wait < autoTimeElapsed) {
+        state = "seven";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "seven") {
+      tankDrive(0.4, 0.4);
+      intake.set(0);
+      if (leftPosition < 15) {
+        state = "eight";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "eight") {
+      tankDrive(0.5, -0.5);
+      intake.set(0);
+      if (leftPosition < 6.5) {
+        state = "nine";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "nine") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0.125);
+      if (wait < autoTimeElapsed) {
+        state = "ten";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "ten") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (wait < autoTimeElapsed) {
+        state = "eleven";
+        wait = autoTimeElapsed + 1;
+        shooterA.setControl(velocity.withVelocity(0));
+        shooterB.setControl(velocity.withVelocity(0));
+        intake.set(0);
+        tankDrive(0, 0);
+      }
+    }
+    // if (state == "eleven") {
+    //   tankDrive(-0.5, 0.5);
+    //   shooterA.setControl(velocity.withVelocity(0));
+    //   shooterB.setControl(velocity.withVelocity(0));
+    //   if (leftPosition > 3.5) { //8.75 = mid note
+    //     state = "twelve";
+    //     wait = autoTimeElapsed + 1;
+    //     tankDrive(0, 0);
+    //   }
+    // }
+  }
 
   /* This function is called once when teleop is enabled. */
   @Override
@@ -991,7 +1106,7 @@ public class Robot extends TimedRobot {
     if (controller1.getLeftBumper()) {
       speed = 7;
     } else if (controller1.getRightBumper()) {
-      speed = 2;
+      speed = 0.5;
     } else {
       speed = 5;
     }
