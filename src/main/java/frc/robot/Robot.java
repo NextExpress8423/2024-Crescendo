@@ -1069,16 +1069,23 @@ public class Robot extends TimedRobot {
         tankDrive(0, 0);
       }
     }
-    // if (state == "eleven") {
-    //   tankDrive(-0.5, 0.5);
-    //   shooterA.setControl(velocity.withVelocity(0));
-    //   shooterB.setControl(velocity.withVelocity(0));
-    //   if (leftPosition > 3.5) { //8.75 = mid note
-    //     state = "twelve";
-    //     wait = autoTimeElapsed + 1;
-    //     tankDrive(0, 0);
-    //   }
-    // }
+    if (state == "eleven") {
+      tankDrive(-0.5, 0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftPosition > 5) { //8.75 = mid note
+        state = "twelve";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "twelve"){
+      tankDrive(-1, -0.75);
+      if (leftPosition > 130){
+        state = "thirteen";
+        tankDrive(0,0);
+      }
+    }
   }
 
   /* This function is called once when teleop is enabled. */
