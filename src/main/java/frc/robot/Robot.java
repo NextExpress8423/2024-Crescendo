@@ -790,7 +790,7 @@ public class Robot extends TimedRobot {
       tankDrive(0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (driveRightA.getEncoder().getPosition() < -11.25) {
+      if (driveRightA.getEncoder().getPosition() < -10.25) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -807,7 +807,7 @@ public class Robot extends TimedRobot {
     if (state == "six") {
       tankDrive(-0.25, -0.25);
       intake.set(-0.5);
-      if (rightPosition > 36.5) {
+      if (rightPosition > 80) {
         state = "seven";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -840,7 +840,7 @@ public class Robot extends TimedRobot {
       }
     }
     if (state == "ten") { // SHOOT SECOND NOTE? nah, part one.
-      tankDrive(0, 0);
+      intake.set(.25);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(0));
       if (autoTimeElapsed > wait) {
@@ -851,16 +851,14 @@ public class Robot extends TimedRobot {
       }
     }
     if (state == "eleven") { // SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
-      tankDrive(0, 0);
+      intake.set(-.75);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
       if (autoTimeElapsed > wait) {
         state = "FIN!!! YEAH, WHA-HOO!!!";
-        shooterA.setControl(velocity.withVelocity(0));
-        shooterB.setControl(velocity.withVelocity(0));
-        intake.set(0);
-        tankDrive(0, 0);
+        stopEverything();
+        return;
       }
     }
   }
