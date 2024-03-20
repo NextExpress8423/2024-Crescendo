@@ -807,7 +807,7 @@ public class Robot extends TimedRobot {
     if (state == "six") {
       tankDrive(-0.25, -0.25);
       intake.set(-0.5);
-      if (rightPosition > 80) {
+      if (driveRightA.getEncoder().getPosition() < -100) {
         state = "seven";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -894,7 +894,7 @@ public class Robot extends TimedRobot {
       tankDrive(-0.5, 0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition > 8.75) {
+      if (leftPosition > 8.25) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -905,7 +905,7 @@ public class Robot extends TimedRobot {
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(-0.5);
-      if (leftPosition > 30) {
+      if (leftPosition > 45) {
         state = "six";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -932,13 +932,14 @@ public class Robot extends TimedRobot {
     if (state == "eight") {
       tankDrive(0.5, -0.5);
       intake.set(0);
-      if (leftPosition < 3) {
+      if (leftPosition < 2) {
         state = "nine";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
       }
     }
     if (state == "nine") {
+      intake.set(0.25);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(0));
       if (wait < autoTimeElapsed) {
@@ -950,6 +951,7 @@ public class Robot extends TimedRobot {
     if (state == "ten") {
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
       if (wait < autoTimeElapsed) {
         state = "eleven"; // INITAIL FIN ADD LATER
         wait = autoTimeElapsed + 1;
@@ -1109,7 +1111,7 @@ public class Robot extends TimedRobot {
 
     // SPEED
     if (controller1.getLeftBumper()) {
-      speed = 7;
+      speed = 8;
     } else if (controller1.getRightBumper()) {
       speed = 0.5;
     } else {
@@ -1117,9 +1119,9 @@ public class Robot extends TimedRobot {
     }
 
     if (Math.abs(Forward) < 0.25) {
-      turnSpeed = 1.5;
+      turnSpeed = 1.75;
     } else {
-      turnSpeed = 1.0;
+      turnSpeed = 2;
     }
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
@@ -1130,8 +1132,8 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    driveLeftA.set(((turn / speed) - Forward) * 1.45);
-    driveRightA.set((turn / speed) + Forward);
+    driveLeftA.set(((turn / Forward) - Forward) * 1.45);
+    driveRightA.set((turn / speed) + Forward * 0.8);
 
     // TRIGGER CONTROLS (no turn yet)
     /*
