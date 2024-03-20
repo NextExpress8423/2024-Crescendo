@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.Servo;
 //import edu.wpi.first.wpilibj.PowerDistribution;
 //import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -75,6 +76,7 @@ public class Robot extends TimedRobot {
   CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
   CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
+  Servo ampServo = new Servo(1);
   double turn = controller1.getRightX() / turnSpeed;
   TalonFX shooterA = new TalonFX(4);
   TalonFX shooterB = new TalonFX(3);
@@ -90,6 +92,8 @@ public class Robot extends TimedRobot {
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
+  private static final double flapDown = 0.0;
+   private static final double flapUp = 1.0;
 
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -660,10 +664,11 @@ public class Robot extends TimedRobot {
     // AMP
     // INTAKE
     if (controller2.getLeftBumper()) {
+      ampServo.set(flapDown);
     }
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
-      // amp.set(ControlMode.PercentOutput, 0.5);
+      ampServo.set(flapUp);
       shooterA.setControl(velocitySlow.withVelocity(35));
       shooterB.setControl(velocitySlow.withVelocity(35));
     }
