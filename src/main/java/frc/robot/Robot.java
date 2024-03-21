@@ -92,8 +92,8 @@ public class Robot extends TimedRobot {
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
-  private static final double flapDown = 0.0;
-   private static final double flapUp = 1.0;
+  private static final double flapDown = 1.0;
+   private static final double flapUp = 0.5;
 
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -419,7 +419,7 @@ public class Robot extends TimedRobot {
     if (state == "eight") {
       tankDrive(0.5, -0.5);
       intake.set(0);
-      if (leftPosition < 2) {
+      if (leftPosition < 6) {
         state = "nine";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -440,21 +440,7 @@ public class Robot extends TimedRobot {
       shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
       if (wait < autoTimeElapsed) {
-        state = "eleven"; // INITAIL FIN ADD LATER
-        wait = autoTimeElapsed + 1;
-        shooterA.setControl(velocity.withVelocity(0));
-        shooterB.setControl(velocity.withVelocity(0));
-        tankDrive(0, 0);
-      }
-    }
-    if (state == "twelve") {
-      tankDrive(-0.5, 0.5);
-      shooterA.setControl(velocity.withVelocity(0));
-      shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition > 8.75) {
-        state = "thirteen";
-        wait = autoTimeElapsed + 1;
-        tankDrive(0, 0);
+        state = "fin"; // INITAIL FIN ADD LATER
       }
     }
   }
@@ -596,24 +582,22 @@ public class Robot extends TimedRobot {
   @Override
 
   public void teleopPeriodic() {
-
     turn = (-controller1.getRightX() * -turnSpeed);
-
     Forward = controller1.getLeftY();
 
     // SPEED
     if (controller1.getLeftBumper()) {
-      speed = 8;
+      speed = 1;
     } else if (controller1.getRightBumper()) {
       speed = 0.5;
     } else {
-      speed = 5;
+      speed = 0.85;
     }
 
-    if (Math.abs(Forward) < 0.25) {
-      turnSpeed = 1.75;
-    } else {
+    if (Math.abs(Forward*speed) < 0.25) {
       turnSpeed = 2;
+    } else {
+      turnSpeed = 0.5;
     }
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
@@ -624,9 +608,9 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    // driveLeftA.set(((turn / speed) - Forward) * 1.45);
-    // driveRightA.set((turn / speed) + Forward * 0.8);
-    tankDrive(((Forward * speed) - turn) * 1.45, ((Forward * speed) + turn) * 0.8);
+     //driveLeftA.set(((turn / speed) - Forward) * 1.45);
+     //driveRightA.set((turn / speed) + Forward * 0.8);
+    tankDrive(((Forward * speed) - (turn)) *1.04, ((Forward * speed) + (turn)) * 0.8);
     // TRIGGER CONTROLS (no turn yet)
     /*
      * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
