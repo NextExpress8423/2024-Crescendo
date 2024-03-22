@@ -58,7 +58,8 @@ public class Robot extends TimedRobot {
   // private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
   // private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto9 = "Slanted Duel Note";
-  private static final String rightSpeaker2Note = "right side speaker! 2 note";
+  private static final String rightSpeaker2NoteBlue = "right side speaker! 2 note blue";
+  private static final String rightSpeaker2NoteRed = "right side speaker! 2 note red";
   private static final String rightSpeaker3Note = "right side speaker! 3 note";
   private double speed = 5.0;
   private double turnSpeed = 1.5;
@@ -166,7 +167,8 @@ public class Robot extends TimedRobot {
     // m_chooser.addOption("blue left", kDefaultAuto3);
     // m_chooser.addOption("blue right", kCustomAuto4);
     m_chooser.addOption("Slanted Duel Note", kCustomAuto9);
-    m_chooser.addOption(rightSpeaker2Note, rightSpeaker2Note);
+    m_chooser.addOption(rightSpeaker2NoteBlue, rightSpeaker2NoteBlue);
+    m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
     m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
     m_chooser.addOption(shootNGo, shootNGo);
     // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
@@ -249,7 +251,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    stopEverything();
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
     m_autoSelected = m_chooser.getSelected();
@@ -289,8 +291,10 @@ public class Robot extends TimedRobot {
       runOneNoteAuton(autoTimeElapsed);
     } else if (m_autoSelected == "Slanted Duel Note") {
       runTwoNoteAutonSide(autoTimeElapsed);
-    } else if (m_autoSelected.equals(rightSpeaker2Note)) {
-      runRightSpeaker2Note(autoTimeElapsed);
+    } else if (m_autoSelected.equals(rightSpeaker2NoteBlue)) {
+      runRightSpeaker2NoteBlue(autoTimeElapsed);
+    } else if (m_autoSelected.equals(rightSpeaker2NoteRed)) {
+      runRightSpeaker2NoteRed(autoTimeElapsed);
     } else if (m_autoSelected.equals(rightSpeaker3Note)) {
       runRightSpeaker3Note(autoTimeElapsed);
     } else if (m_autoSelected.equals(centerTwoNote)) {
@@ -348,8 +352,7 @@ public class Robot extends TimedRobot {
    * 2 note, starts on right side, shoots preloaded, picks up and shoots the note
    * closest to the amp
    */
-  public void runRightSpeaker2Note(double autoTimeElapsed) {
-    System.out.println("entering triple note slanted block");
+  public void runRightSpeaker2NoteBlue(double autoTimeElapsed) {
     if (state == "init") {
       System.out.println("Running init state");
       shooterA.setControl(velocity.withVelocity(1500));
@@ -391,6 +394,105 @@ public class Robot extends TimedRobot {
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(-0.5);
       if (leftPosition > 45) {
+        state = "six";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "six") {
+      tankDrive(0, 0);
+      intake.set(-0.75);
+      if (wait < autoTimeElapsed) {
+        state = "seven";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "seven") {
+      tankDrive(0.4, 0.4);
+      intake.set(0);
+      if (leftPosition < 15) {
+        state = "eight";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "eight") {
+      tankDrive(0.5, -0.5);
+      intake.set(0);
+      if (leftPosition < 6) {
+        state = "nine";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "nine") {
+      intake.set(0.25);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (wait < autoTimeElapsed) {
+        state = "ten";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "ten") {
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (wait < autoTimeElapsed) {
+        state = "fin"; // INITAIL FIN ADD LATER
+      }
+    }
+  }
+/**
+   * 2 note, starts on right side, shoots preloaded, picks up and shoots the note
+   * closest to the amp
+   */
+  public void runRightSpeaker2NoteRed(double autoTimeElapsed) {
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      intake.set(-5);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(-0.5, -0.5);
+      intake.set(0);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftPosition > 1 && rightPosition < 1) {
+        state = "four";
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "four") {
+      tankDrive(-0.5, 0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (leftPosition > 8.5) {
+        state = "five";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "five") {
+      tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(-0.5);
+      if (leftPosition > 42) {
         state = "six";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -489,7 +591,7 @@ public class Robot extends TimedRobot {
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(-0.5);
-      if (leftPosition > 45) {
+      if (leftPosition > 42) {
         state = "six";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
