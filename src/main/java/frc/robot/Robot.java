@@ -581,16 +581,17 @@ public class Robot extends TimedRobot {
     // SPEED
     if (controller1.getLeftBumper()) {
       speed = 1;
+      turnSpeed = 1.5;
     } else if (controller1.getRightBumper()) {
       speed = 0.5;
-    } else {
-      speed = 0.85;
-    }
-
-    if (Math.abs(Forward*speed) < 0.25) {
-      turnSpeed = 2;
-    } else {
       turnSpeed = 0.5;
+    } 
+    else if (controller1.getRightTriggerAxis() > 0.25){
+      turnSpeed = 7.5;
+    }
+    else {
+      speed = 0.85;
+      turnSpeed = 0.65;
     }
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
