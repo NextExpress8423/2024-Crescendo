@@ -166,6 +166,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption(BlueLeftOneNote, BlueLeftOneNote);
     m_chooser.addOption(RedLeftOneNote, RedLeftOneNote);
     SmartDashboard.putData("Auto choices", m_chooser);
+    
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = 0.101;
@@ -215,6 +216,9 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Right Position Var", rightPosition);
     SmartDashboard.putNumber("Left Position Var", leftPosition);
+
+    SmartDashboard.putNumber("ShooterA", shootingSpeedA);
+    SmartDashboard.putNumber("ShooterB", shootingSpeedB);
 
     SmartDashboard.putNumber("gyro angle", gyro.getAngle());
     SmartDashboard.putNumber("gyro rate", gyro.getRate());
@@ -529,7 +533,7 @@ public class Robot extends TimedRobot {
       tankDrive(-0.5, 0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition > 8.5) {
+      if (leftPosition > 8.0) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -728,9 +732,9 @@ public class Robot extends TimedRobot {
     turn = (-controller1.getRightX() * -turnSpeed);
     Forward = controller1.getLeftY();
 
-    shootingSpeedB = shootingSpeedA * 0.8;
+    
 
-    // SPEED
+    // SPEED CONTROLS
     if (controller1.getLeftBumper()) {
       speed = 1;
       turnSpeed = 1.5;
@@ -756,6 +760,15 @@ public class Robot extends TimedRobot {
     // TRIGGER CONTROLS (no turn yet)
 
     // MANIPULATOR CONTROLS
+    // SHOOTER SPEED CONTROLS
+    if (controller2.getXButton()) { // slow
+      shootingSpeedA = 100;
+    } else if (controller2.getYButton()) { // fast
+      shootingSpeedA = 2000;
+    } else { // normal
+      shootingSpeedA = 1500;
+    }
+    shootingSpeedB = shootingSpeedA * 0.8;
     // SHOOT
     if (controller2.getRightTriggerAxis() > 0.5) {
       shooterA.setControl(velocity.withVelocity(shootingSpeedA));
@@ -780,14 +793,7 @@ public class Robot extends TimedRobot {
       intake.set(0);
     }
 
-    // SHOOTER SPEED CONTROLS
-    if (controller2.getXButton()) { // slow
-      shootingSpeedA = 750;
-    } else if (controller2.getYButton()) { // fast
-      shootingSpeedA = 2000;
-    } else { // normal
-      shootingSpeedA = 1500;
-    }
+    
 
     // AMP
     // INTAKE
