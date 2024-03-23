@@ -54,7 +54,8 @@ public class Robot extends TimedRobot {
   // private static final String kDefaultAuto3 = "red left";
   // private static final String kCustomAuto4 = "red right";
   private static final String centerTwoNote = "center two note";
-  private static final String shootNGo = "center one note";
+  private static final String BlueLeftOneNote = "Blue left one note";
+  private static final String RedLeftOneNote = "Red left one note";
   // private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
   // private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto9 = "Slanted Duel Note";
@@ -170,7 +171,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption(rightSpeaker2NoteBlue, rightSpeaker2NoteBlue);
     m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
     m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
-    m_chooser.addOption(shootNGo, shootNGo);
+    m_chooser.addOption(BlueLeftOneNote, BlueLeftOneNote);
+    m_chooser.addOption(RedLeftOneNote, RedLeftOneNote);
     // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
     // USE!]", kCustomAuto7);
     // m_chooser.addOption("[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT
@@ -287,8 +289,10 @@ public class Robot extends TimedRobot {
       stopEverything();
       return;
     }
-    if (m_autoSelected == shootNGo) {
-      runOneNoteAuton(autoTimeElapsed);
+    if (m_autoSelected == BlueLeftOneNote) {
+      runBlueLeftOneNote(autoTimeElapsed);
+    } else if (m_autoSelected == RedLeftOneNote) {
+      runRedLeftOneNote(autoTimeElapsed);
     } else if (m_autoSelected == "Slanted Duel Note") {
       runTwoNoteAutonSide(autoTimeElapsed);
     } else if (m_autoSelected.equals(rightSpeaker2NoteBlue)) {
@@ -317,7 +321,7 @@ public class Robot extends TimedRobot {
   /**
    * One note, in front of speaker
    */
-  public void runOneNoteAuton(double autoTimeElapsed) {
+  public void runBlueLeftOneNote(double autoTimeElapsed) {
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
       System.out.println("Running init state");
@@ -346,6 +350,61 @@ public class Robot extends TimedRobot {
       }
     }
 
+  }
+/**
+   * One note, in front of speaker
+   */
+  public void runRedLeftOneNote(double autoTimeElapsed) {
+    System.out.println("Entering oneNoteAuto block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(0.4, -0.75);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0);
+      if (rightPosition > 2.6) {
+        state = "four";
+        wait = autoTimeElapsed + 10;
+      }
+    }
+    if (state == "four") {
+      tankDrive(0, 0);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0);
+      if (autoTimeElapsed > wait) {
+        state = "five";
+      }
+    }
+    if (state == "five") {
+      tankDrive(-0.5, -0.5);
+      if (rightPosition > 40) {
+        state = "six";
+      }
+    }
+    if (state == "six") {
+      intake.set(-0.5);
+      tankDrive(-0.5, -0.5);
+      if (rightPosition > 50) {
+        state = "fin";
+      }
+    }
   }
 
   /**
