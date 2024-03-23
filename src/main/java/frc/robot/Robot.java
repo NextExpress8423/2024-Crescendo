@@ -158,22 +158,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     CameraServer.startAutomaticCapture(0);
-    // m_chooser.addOption("red left", kDefaultAuto);
-    // m_chooser.addOption("red right", kCustomAuto);
-    // m_chooser.addOption("straight", kCustomAuto2);
-    // m_chooser.addOption("blue left", kDefaultAuto3);
-    // m_chooser.addOption("blue right", kCustomAuto4);
     m_chooser.addOption(blueLeftTwoNote, blueLeftTwoNote);
     m_chooser.addOption(rightSpeaker2NoteBlue, rightSpeaker2NoteBlue);
     m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
     m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
     m_chooser.addOption(BlueLeftOneNote, BlueLeftOneNote);
     m_chooser.addOption(RedLeftOneNote, RedLeftOneNote);
-    // m_chooser.addOption("[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT
-    // USE!]", kCustomAuto7);
-    // m_chooser.addOption("[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT
-    // USE!]", kCustomAuto8);
-    // m_chooser.addOption("encoder test", kCustomAuto6);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
@@ -759,19 +749,10 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    // driveLeftA.set(((turn / speed) - Forward) * 1.45);
-    // driveRightA.set((turn / speed) + Forward * 0.8);
     tankDrive(((Forward * speed) - (turn)) * 1.04, ((Forward * speed) + (turn)) * 0.8);
     // TRIGGER CONTROLS (no turn yet)
-    /*
-     * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
-     * controller1.getRightTriggerAxis()) * 1.45);
-     * driveRightA.set(ControlMode.PercentOutput, -controller1.getLeftTriggerAxis()
-     * - controller1.getRightTriggerAxis());
-     */
 
     // MANIPULATOR CONTROLS
-    // shooter
     // SHOOT
     if (controller2.getRightTriggerAxis() > 0.5) {
       shooterA.setControl(velocity.withVelocity(shootingSpeedA));
