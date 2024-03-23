@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
   private static final String BlueLeftOneNote = "Blue left shoot 'n go!";
   private static final String RedLeftOneNote = "Red left shoot 'n go";
   private static final String blueLeftTwoNote = "blue Left Two Note";
+  private static final String redLeftTwoNote = "red Left Two Note";
   private static final String rightSpeaker2NoteBlue = "right side speaker! 2 note blue";
   private static final String rightSpeaker2NoteRed = "right side speaker! 2 note red";
   private static final String rightSpeaker3Note = "right side speaker! 3 note";
@@ -280,7 +281,9 @@ public class Robot extends TimedRobot {
     } else if (m_autoSelected == RedLeftOneNote) {
       runRedLeftOneNote(autoTimeElapsed);
     } else if (m_autoSelected == blueLeftTwoNote) {
-      runTwoNoteAutonSide(autoTimeElapsed);
+      runblueLeftTwoNote(autoTimeElapsed);
+      } else if (m_autoSelected == redLeftTwoNote) {
+      runRedLeftTwoNote(autoTimeElapsed);
     } else if (m_autoSelected.equals(rightSpeaker2NoteBlue)) {
       runRightSpeaker2NoteBlue(autoTimeElapsed);
     } else if (m_autoSelected.equals(rightSpeaker2NoteRed)) {
@@ -1168,7 +1171,110 @@ public class Robot extends TimedRobot {
   /**
    * unused auto
    */
-  public void runTwoNoteAutonSide(double autoTimeElapsed) {
+  public void runblueLeftTwoNote(double autoTimeElapsed) {
+    System.out.println("entering two note slanted block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      // tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(-0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (driveLeftA.getEncoder().getPosition() > 1 && driveRightA.getEncoder().getPosition() < -1) {
+        state = "four";
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "four") {
+      tankDrive(0.5, -0.5);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (driveRightA.getEncoder().getPosition() < -10.25) {
+        state = "five";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+
+    if (state == "five") {
+      tankDrive(0, 0);
+      if (wait < autoTimeElapsed) {
+        state = "six";
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "six") {
+      tankDrive(-0.25, -0.25);
+      intake.set(-0.5);
+      if (driveRightA.getEncoder().getPosition() < -35) {
+        state = "seven";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "seven") { // BEGIN TO GO IN REVERSE
+      tankDrive(0, 0);
+      intake.set(-0.75);
+      if (autoTimeElapsed > wait) {
+        state = "eight";
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "eight") {
+      tankDrive(0.25, 0.25);
+      intake.set(0);
+      if (driveRightA.getEncoder().getPosition() > -11.25) {
+        state = "nine";
+        intake.set(0);
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "nine") { // SHOOT SECOND NOTE!!! YEAH THE HOME STRETCH, wait no turn
+      tankDrive(-0.5, 0.5);
+      if (driveRightA.getEncoder().getPosition() > -4.0) {
+        state = "ten";
+        intake.set(0);
+        tankDrive(0, 0);
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "ten") { // SHOOT SECOND NOTE? nah, part one.
+      intake.set(.25);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > wait) {
+        state = "eleven";
+        intake.set(0);
+        tankDrive(0, 0);
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "eleven") { // SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
+      intake.set(-.75);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fin";
+      }
+    }
+  }
+
+  public void runRedLeftTwoNote(double autoTimeElapsed) {
     System.out.println("entering two note slanted block");
     if (state == "init") {
       System.out.println("Running init state");
