@@ -56,8 +56,10 @@ public class Robot extends TimedRobot {
   private static final String centerTwoNote = "center two note";
   private static final String BlueLeftOneNote = "Blue left one note";
   private static final String RedLeftOneNote = "Red left one note";
-  // private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!! >=D [Speaker]DO NOT USE!]";
-  // private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note shoot!!!! =D [Speaker]DO NOT USE!]";
+  // private static final String kCustomAuto7 = "[DO NOT USE!]triple note auton!!!
+  // >=D [Speaker]DO NOT USE!]";
+  // private static final String kCustomAuto8 = "[DO NOT USE!]quadruple note
+  // shoot!!!! =D [Speaker]DO NOT USE!]";
   private static final String kCustomAuto9 = "Slanted Duel Note";
   private static final String rightSpeaker2NoteBlue = "right side speaker! 2 note blue";
   private static final String rightSpeaker2NoteRed = "right side speaker! 2 note red";
@@ -92,8 +94,10 @@ public class Robot extends TimedRobot {
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
+  double shootingSpeedA = 1500;
+  double shootingSpeedB = 1200;
   private static final double flapDown = 1.0;
-   private static final double flapUp = 0.5;
+  private static final double flapUp = 0.5;
 
   ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -351,7 +355,8 @@ public class Robot extends TimedRobot {
     }
 
   }
-/**
+
+  /**
    * One note, in front of speaker
    */
   public void runRedLeftOneNote(double autoTimeElapsed) {
@@ -504,7 +509,8 @@ public class Robot extends TimedRobot {
       }
     }
   }
-/**
+
+  /**
    * 2 note, starts on right side, shoots preloaded, picks up and shoots the note
    * closest to the amp
    */
@@ -739,6 +745,8 @@ public class Robot extends TimedRobot {
     turn = (-controller1.getRightX() * -turnSpeed);
     Forward = controller1.getLeftY();
 
+    shootingSpeedB = shootingSpeedA * 0.8;
+
     // SPEED
     if (controller1.getLeftBumper()) {
       speed = 1;
@@ -746,11 +754,9 @@ public class Robot extends TimedRobot {
     } else if (controller1.getRightBumper()) {
       speed = 0.5;
       turnSpeed = 0.5;
-    } 
-    else if (controller1.getRightTriggerAxis() > 0.25){
+    } else if (controller1.getRightTriggerAxis() > 0.25) {
       turnSpeed = 7.5;
-    }
-    else {
+    } else {
       speed = 0.85;
       turnSpeed = 0.65;
     }
@@ -763,9 +769,9 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-     //driveLeftA.set(((turn / speed) - Forward) * 1.45);
-     //driveRightA.set((turn / speed) + Forward * 0.8);
-    tankDrive(((Forward * speed) - (turn)) *1.04, ((Forward * speed) + (turn)) * 0.8);
+    // driveLeftA.set(((turn / speed) - Forward) * 1.45);
+    // driveRightA.set((turn / speed) + Forward * 0.8);
+    tankDrive(((Forward * speed) - (turn)) * 1.04, ((Forward * speed) + (turn)) * 0.8);
     // TRIGGER CONTROLS (no turn yet)
     /*
      * driveLeftA.set(ControlMode.PercentOutput, (controller1.getLeftTriggerAxis() -
@@ -778,8 +784,8 @@ public class Robot extends TimedRobot {
     // shooter
     // SHOOT
     if (controller2.getRightTriggerAxis() > 0.5) {
-      shooterA.setControl(velocity.withVelocity(1500));
-      shooterB.setControl(velocity.withVelocity(1200));
+      shooterA.setControl(velocity.withVelocity(shootingSpeedA));
+      shooterB.setControl(velocity.withVelocity(shootingSpeedB));
     }
     // INTAKE
     else if (controller2.getRightBumper()) {
@@ -798,6 +804,15 @@ public class Robot extends TimedRobot {
       intake.set(0.5);
     } else {
       intake.set(0);
+    }
+
+    // SHOOTER SPEED CONTROLS
+    if (controller2.getXButton()) { // slow
+      shootingSpeedA = 750;
+    } else if (controller2.getYButton()) { // fast
+      shootingSpeedA = 2000;
+    } else { // normal
+      shootingSpeedA = 1500;
     }
 
     // AMP
