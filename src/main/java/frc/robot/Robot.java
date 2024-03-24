@@ -424,8 +424,6 @@ public class Robot extends TimedRobot {
     }
     if (state == "eleven"){
       intake.set(0.125);
-      shooterA.setControl(velocity.withVelocity(1500));
-      shooterB.setControl(velocity.withVelocity(0));
       if (wait < autoTimeElapsed){
         state = "twelve";
         intake.set(0);
@@ -434,17 +432,34 @@ public class Robot extends TimedRobot {
       }
     }
     if (state == "twelve"){
-      shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
       if (wait < autoTimeElapsed){
-        state = "fin";
+        state = "thirteen";
         intake.set(0);
+        wait = autoTimeElapsed + 1;
         shooterA.setControl(velocity.withVelocity(0));
         shooterB.setControl(velocity.withVelocity(0));      
       }
     }
+    if (state == "thirteen") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > wait) {
+        state = "fourteen";
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "fourteen") {
+      System.out.println("Running two state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fifteen";
+      }
+    }
   }
-  
   public void runCenterTwoNote(double autoTimeElapsed){
     if (state == "init") {
       System.out.println("Running init state");
@@ -1347,7 +1362,7 @@ public class Robot extends TimedRobot {
       System.out.println("Running init state");
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(0));
-      if (autoTimeElapsed > 1) {
+      if (autoTimeElapsed > 0.5) {
         state = "two";
       }
     }
@@ -1356,7 +1371,8 @@ public class Robot extends TimedRobot {
       // tankDrive(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
-      if (autoTimeElapsed > 2) {
+      intake.set(-0.5);
+      if (autoTimeElapsed > 1) {
         state = "three";
       }
     }
@@ -1364,7 +1380,7 @@ public class Robot extends TimedRobot {
       tankDrive(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (driveLeftA.getEncoder().getPosition() > 1 && driveRightA.getEncoder().getPosition() < -1) {
+      if (driveLeftA.getEncoder().getPosition() > 0.125 && driveRightA.getEncoder().getPosition() < -0.125) {
         state = "four";
         tankDrive(0, 0);
       }
@@ -1373,73 +1389,28 @@ public class Robot extends TimedRobot {
       tankDrive(0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (driveRightA.getEncoder().getPosition() < -10.25) {
+      if (driveRightA.getEncoder().getPosition() < -4.75) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
       }
     }
-
     if (state == "five") {
-      tankDrive(0, 0);
-      if (wait < autoTimeElapsed) {
+      tankDrive(-0.5, -0.4);
+      intake.set(-0.5);
+      if (driveRightA.getEncoder().getPosition() < -35) {
         state = "six";
+        wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
       }
     }
     if (state == "six") {
-      tankDrive(-0.25, -0.25);
+      tankDrive(0.5, 0.4);
       intake.set(-0.5);
-      if (driveRightA.getEncoder().getPosition() < -35) {
+      if (driveRightA.getEncoder().getPosition() > -20) {
         state = "seven";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
-      }
-    }
-    if (state == "seven") { // BEGIN TO GO IN REVERSE
-      tankDrive(0, 0);
-      intake.set(-0.75);
-      if (autoTimeElapsed > wait) {
-        state = "eight";
-        tankDrive(0, 0);
-      }
-    }
-    if (state == "eight") {
-      tankDrive(0.25, 0.25);
-      intake.set(0);
-      if (driveRightA.getEncoder().getPosition() > -11.25) {
-        state = "nine";
-        intake.set(0);
-        tankDrive(0, 0);
-      }
-    }
-    if (state == "nine") { // SHOOT SECOND NOTE!!! YEAH THE HOME STRETCH, wait no turn
-      tankDrive(-0.5, 0.5);
-      if (driveRightA.getEncoder().getPosition() > -4.0) {
-        state = "ten";
-        intake.set(0);
-        tankDrive(0, 0);
-        wait = autoTimeElapsed + 1;
-      }
-    }
-    if (state == "ten") { // SHOOT SECOND NOTE? nah, part one.
-      intake.set(.25);
-      shooterA.setControl(velocity.withVelocity(1500));
-      shooterB.setControl(velocity.withVelocity(0));
-      if (autoTimeElapsed > wait) {
-        state = "eleven";
-        intake.set(0);
-        tankDrive(0, 0);
-        wait = autoTimeElapsed + 1;
-      }
-    }
-    if (state == "eleven") { // SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
-      intake.set(-.75);
-      shooterA.setControl(velocity.withVelocity(1500));
-      shooterB.setControl(velocity.withVelocity(1200));
-      intake.set(-0.5);
-      if (autoTimeElapsed > wait) {
-        state = "fin";
       }
     }
   }
