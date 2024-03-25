@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-//import org.ejml.equation.IntegerSequence.For;
 import java.lang.Math;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-//import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -17,30 +15,21 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ExternalFollower;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-//import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-//import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Servo;
-//import edu.wpi.first.wpilibj.PowerDistribution;
-//import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-//import edu.wpi.first.wpilibj.event.EventLoop;
-//import edu.wpi.first.wpilibj.drive.RobottankDrivease.MotorType;
-//import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.cameraserver.CameraServer;
 
 /*
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -1084,278 +1073,6 @@ public class Robot extends TimedRobot {
       }
     }
   }
-
-  /**
-   * unused auto
-   */
-  // public void runTripleNoteAuton(double autoTimeElapsed) {
-  //   if (state == "init") {
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (autoTimeElapsed > 1) {
-  //       state = "two";
-  //     }
-  //   }
-  //   if (state == "two") {
-  //     tankDrive(-0.6, -0.4);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > 2) {
-  //       state = "three";
-  //     }
-  //   }
-  //   if (state == "three") {
-  //     tankDrive(-0.6, -0.4);
-  //     intake.set(-0.5);
-  //     shooterA.setControl(velocity.withVelocity(0));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (leftPosition > 10) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       state = "four";
-  //     }
-  //   }
-  //   if (state == "four") {
-  //     intake.set(0);
-  //     tankDrive(0.6, 0.525);
-  //     if (leftPosition < 1.45 && rightPosition < 1.45) {
-  //       tankDrive(0, 0);
-  //       state = "five";
-  //       wait = autoTimeElapsed + 0.5;
-  //     }
-  //   }
-  //   if (state == "five") { // SHOOT SECOND NOTE
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     if (autoTimeElapsed > wait) {
-  //       wait = autoTimeElapsed + 1;
-  //       intake.set(0);
-  //       state = "six";
-  //     }
-  //   }
-  //   if (state == "six") { // SHOOT SECOND NOTE
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       intake.set(0);
-  //       state = "seven";
-  //     }
-  //   }
-  //   if (state == "seven") {
-  //     tankDrive(-0.9, -0.45);
-  //     intake.set(-0.5);
-  //     if (leftPosition > 9) {
-  //       state = "eight";
-  //     }
-  //   }
-  //   if (state == "eight") {
-  //     tankDrive(0.9, 0.45);
-  //     intake.set(0);
-  //     if (leftPosition < 3.5 && rightPosition < 3.5) {
-  //       state = "nine";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "nine") {
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (autoTimeElapsed > wait) {
-  //       wait = autoTimeElapsed + 1;
-  //       state = "ten";
-  //     }
-  //   }
-  //   if (state == "ten") {
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       state = "fin";
-  //     }
-  //   }
-  // }
-  /**
-   * unused auto
-   */
-  // public void runQuadrupleNoteShoot(double autoTimeElapsed) {
-  //   if (state == "init") {
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (autoTimeElapsed > 1) {
-  //       state = "two";
-  //     }
-  //   }
-  //   if (state == "two") {
-  //     tankDrive(-0.6, -0.4);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     if (autoTimeElapsed > 2) {
-  //       state = "three";
-  //     }
-  //   }
-  //   if (state == "three") {
-  //     tankDrive(-0.6, -0.4);
-  //     intake.set(-0.5);
-  //     shooterA.setControl(velocity.withVelocity(0));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (leftPosition > 10) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       state = "four";
-  //     }
-  //   }
-  //   if (state == "four") {
-  //     intake.set(0);
-  //     tankDrive(0.6, 0.525);
-  //     if (leftPosition < 1.45 && rightPosition < 1.45) {
-  //       tankDrive(0, 0);
-  //       state = "five";
-  //       wait = autoTimeElapsed + 0.5;
-  //     }
-  //   }
-  //   if (state == "five") { // SHOOT SECOND NOTE
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     if (autoTimeElapsed > wait) {
-  //       wait = autoTimeElapsed + 1;
-  //       intake.set(0);
-  //       state = "six";
-  //     }
-  //   }
-  //   if (state == "six") { // SHOOT SECOND NOTE
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       intake.set(0);
-  //       state = "seven";
-  //     }
-  //   }
-  //   if (state == "seven") {
-  //     tankDrive(-0.9, -0.4);
-  //     intake.set(-0.5);
-  //     if (leftPosition < 1.45 && rightPosition < 1.45) {
-  //       state = "eight";
-  //     }
-  //   }
-  //   if (state == "eight") {
-  //     tankDrive(0.9, 0.4);
-  //     intake.set(0);
-  //     if (leftPosition < 0.5 && rightPosition < 0.5) {
-  //       state = "nine";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "nine") {
-  //     tankDrive(0, 0);
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     if (autoTimeElapsed > wait) {
-  //       wait = autoTimeElapsed + 1;
-  //       state = "ten";
-  //     }
-  //   }
-  //   if (state == "ten") { // SHOOT THIRD NOTE
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       intake.set(0);
-  //       state = "eleven";
-  //     }
-  //   }
-  //   if (state == "eleven") {
-  //     tankDrive(-0.75, -0.15);
-  //     intake.set(-0.5);
-  //     if (leftPosition > 8 && rightPosition > 8) {
-  //       tankDrive(0, 0);
-  //       state = "twelve";
-  //     }
-  //   }
-  //   if (state == "twelve") {
-  //     tankDrive(0.75, 0.15);
-  //     intake.set(-0.5);
-  //     if (leftPosition < 1 && rightPosition < 1) {
-  //       tankDrive(0, 0);
-  //       state = "thirteen";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "thirteen") {
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     intake.set(0);
-  //     if (autoTimeElapsed > wait) {
-  //       state = "fourteen";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "fourteen") {
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       state = "fin";
-  //     }
-  //   }
-  //   if (state == "ten") { // SHOOT THIRD NOTE
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       shooterA.setControl(velocity.withVelocity(0));
-  //       shooterB.setControl(velocity.withVelocity(0));
-  //       intake.set(0);
-  //       state = "eleven";
-  //     }
-  //   }
-  //   if (state == "eleven") {
-  //     tankDrive(-0.75, -0.15);
-  //     intake.set(-0.5);
-  //     if (leftPosition > 8 && rightPosition > 8) {
-  //       tankDrive(0, 0);
-  //       state = "twelve";
-  //     }
-  //   }
-  //   if (state == "twelve") {
-  //     tankDrive(0.75, 0.15);
-  //     intake.set(-0.5);
-  //     if (leftPosition < 1 && rightPosition < 1) {
-  //       tankDrive(0, 0);
-  //       state = "thirteen";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "thirteen") {
-  //     shooterA.setControl(velocity.withVelocity(1500));
-  //     shooterB.setControl(velocity.withVelocity(0));
-  //     intake.set(0);
-  //     if (autoTimeElapsed > wait) {
-  //       state = "fourteen";
-  //       wait = autoTimeElapsed + 1;
-  //     }
-  //   }
-  //   if (state == "fourteen") {
-  //     shooterB.setControl(velocity.withVelocity(1200));
-  //     intake.set(-0.5);
-  //     if (autoTimeElapsed > wait) {
-  //       state = "fin";
-  //     }
-  //   }
-  // }
-  
-  /**
-   * unused auto
-   */
   public void runblueLeftTwoNote(double autoTimeElapsed) {
     System.out.println("entering two note slanted block");
     if (state == "init") {
@@ -1368,7 +1085,6 @@ public class Robot extends TimedRobot {
     }
     if (state == "two") {
       System.out.println("Running two state");
-      // tankDrive(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
       intake.set(-0.5);
@@ -1389,7 +1105,7 @@ public class Robot extends TimedRobot {
       tankDrive(0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (driveRightA.getEncoder().getPosition() < -4.75) {
+      if (driveRightA.getEncoder().getPosition() < -4.0) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -1413,6 +1129,35 @@ public class Robot extends TimedRobot {
         tankDrive(0, 0);
       }
     }
+    if (state == "seven") {
+      tankDrive(-0.5, 0.5);
+      intake.set(-0.5);
+      if (driveRightA.getEncoder().getPosition() > -11) {
+        state = "eight";
+        wait = autoTimeElapsed + 1;
+        tankDrive(0, 0);
+      }
+    }
+    if (state == "eight") { // SHOOT SECOND NOTE? nah, part one.
+      intake.set(.125);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(0));
+      if (autoTimeElapsed > wait) {
+        state = "nine";
+        intake.set(0);
+        tankDrive(0, 0);
+        wait = autoTimeElapsed + 1;
+      }
+    }
+    if (state == "nine") { // SHOOT SECOND NOTE!!! FOR REAL THIS TIME!!!!! :)
+      intake.set(-.75);
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > wait) {
+        state = "fin";
+      }
+    }
   }
 
   public void runRedLeftTwoNote(double autoTimeElapsed) {
@@ -1427,7 +1172,6 @@ public class Robot extends TimedRobot {
     }
     if (state == "two") {
       System.out.println("Running two state");
-      // tankDrive(-0.5, -0.5);
       shooterA.setControl(velocity.withVelocity(1500));
       shooterB.setControl(velocity.withVelocity(1200));
       if (autoTimeElapsed > 2) {
