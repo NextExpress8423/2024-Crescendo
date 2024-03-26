@@ -16,18 +16,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ExternalFollower;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
