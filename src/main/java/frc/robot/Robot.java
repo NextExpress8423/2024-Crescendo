@@ -43,7 +43,8 @@ public class Robot extends TimedRobot {
   private static final String centerRedThreeNote = "Red center three note";
   private static final String goinStraight = "goin' straight";
   private static final String BlueLeftOneNote = "Blue left shoot 'n go!";
-  private static final String RedLeftOneNote = "Red left shoot 'n go";
+  private static final String RedLeftOneNote = "Red left one note";
+  private static final String RedRightOneNote = "Red right shoot 'n go!";
   private static final String blueLeftTwoNote = "blue Left Two Note";
   private static final String redLeftTwoNoteNEW = "red Left Two Note NEW";
   private static final String redLeftTwoNote = "red Left Two Note";
@@ -158,6 +159,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
     m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
     m_chooser.addOption(BlueLeftOneNote, BlueLeftOneNote);
+    m_chooser.addOption(RedRightOneNote, RedRightOneNote);
     m_chooser.addOption(RedLeftOneNote, RedLeftOneNote);
     m_chooser.addOption(goinStraight, goinStraight);
     m_chooser.addOption(centerTwoNote, centerTwoNote);
@@ -281,6 +283,8 @@ public class Robot extends TimedRobot {
       runBlueLeftOneNote(autoTimeElapsed);
     } else if (m_autoSelected == RedLeftOneNote) {
       runRedLeftOneNote(autoTimeElapsed);
+    } else if (m_autoSelected == RedRightOneNote) {
+      runRedRightOneNote(autoTimeElapsed); 
     } else if (m_autoSelected == blueLeftTwoNote) {
       runblueLeftTwoNote(autoTimeElapsed);
     } else if (m_autoSelected == redLeftTwoNoteNEW) {
@@ -715,10 +719,41 @@ public class Robot extends TimedRobot {
 
   }
 
+  public void runRedRightOneNote(double autoTimeElapsed) {
+    System.out.println("Entering oneNoteAuto block");
+    if (state == "init") {
+      System.out.println("Running init state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      if (autoTimeElapsed > 1) {
+        state = "two";
+      }
+    }
+    if (state == "two") {
+      System.out.println("Running two state");
+      shooterA.setControl(velocity.withVelocity(1500));
+      shooterB.setControl(velocity.withVelocity(1200));
+      intake.set(-0.5);
+      if (autoTimeElapsed > 2) {
+        state = "three";
+      }
+    }
+    if (state == "three") {
+      tankDrive(-0.6, -0.625);
+      shooterA.setControl(velocity.withVelocity(0));
+      shooterB.setControl(velocity.withVelocity(0));
+      intake.set(0);
+      if (rightPosition > 50) {
+        state = "fin";
+      }
+    }
+
+  }
+
   /**
    * One note, in front of speaker
    */
-  public void runRedLeftOneNote(double autoTimeElapsed) {
+  public void runRedLeftOneNote(double autoTimeElapsed) { //NOT A SHOOT N' GO
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
       System.out.println("Running init state");
@@ -1173,8 +1208,8 @@ public class Robot extends TimedRobot {
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
       ampServo.set(flapUp);
-      shooterA.setControl(velocitySlow.withVelocity(20));
-      shooterB.setControl(velocitySlow.withVelocity(20));
+      shooterA.setControl(velocitySlow.withVelocity(25));
+      shooterB.setControl(velocitySlow.withVelocity(25));
     }
     // HANGING
     if (controller2.getLeftY() >= 0.2) {
