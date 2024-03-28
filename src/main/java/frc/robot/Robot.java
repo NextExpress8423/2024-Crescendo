@@ -31,19 +31,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String centerTwoNote = "center two note";
+
   private static final String centerBlueThreeNote = "Blue center three note";
-  private static final String centerRedThreeNote = "Red center three note";
-  private static final String goinStraight = "goin' straight";
   private static final String BlueLeftOneNote = "Blue left shoot 'n go!";
+  private static final String blueLeftTwoNote = "blue Left Two Note";
+  private static final String rightSpeaker2NoteBlue = "Blue right side speaker! 2 note";
+
+  private static final String centerRedThreeNote = "Red center three note";
   private static final String RedLeftOneNote = "Red left one note";
   private static final String RedRightOneNote = "Red right shoot 'n go!";
-  private static final String blueLeftTwoNote = "blue Left Two Note";
-  private static final String redLeftTwoNoteNEW = "red Left Two Note NEW";
+  private static final String redLeftTwoNoteNEW = "red (blue mimik) Left Two Note";
   private static final String redLeftTwoNote = "red Left Two Note";
-  private static final String rightSpeaker2NoteBlue = "right side speaker! 2 note blue";
-  private static final String rightSpeaker2NoteRed = "right side speaker! 2 note red";
-  private static final String rightSpeaker3Note = "right side speaker! 3 note";
+  private static final String rightSpeaker2NoteRed = "Red right side speaker! 2 note";
+
+  // private static final String rightSpeaker3Note = "right side speaker! 3 note";
+
+  private static final String centerTwoNote = "center two note";
+  private static final String goinStraight = "goin' straight";
   private double speed = 5.0;
   private double turnSpeed = 1.5;
   private double driveMode = 4;
@@ -120,8 +124,15 @@ public class Robot extends TimedRobot {
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    driveLeftA.set(-leftSpeed);
-    driveRightA.set(rightSpeed);
+    double divisor = 
+      Math.max(
+        1.0, 
+        Math.max(
+          Math.abs(leftSpeed), 
+          Math.abs(rightSpeed)));
+    driveLeftA.set(-leftSpeed / divisor);
+    driveRightA.set(rightSpeed / divisor);
+
   }
 
   public double constrain(double number, double maximum, double minimum) {
@@ -147,16 +158,16 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     CameraServer.startAutomaticCapture(0);
     m_chooser.addOption(blueLeftTwoNote, blueLeftTwoNote);
-    m_chooser.addOption(redLeftTwoNoteNEW, redLeftTwoNoteNEW);
-    m_chooser.addOption(rightSpeaker2NoteBlue, rightSpeaker2NoteBlue);
-    m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
-    m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
     m_chooser.addOption(BlueLeftOneNote, BlueLeftOneNote);
+    m_chooser.addOption(rightSpeaker2NoteBlue, rightSpeaker2NoteBlue);
+    m_chooser.addOption(centerBlueThreeNote, centerBlueThreeNote);
+    m_chooser.addOption(redLeftTwoNoteNEW, redLeftTwoNoteNEW);
+    m_chooser.addOption(rightSpeaker2NoteRed, rightSpeaker2NoteRed);
     m_chooser.addOption(RedRightOneNote, RedRightOneNote);
+    // m_chooser.addOption(rightSpeaker3Note, rightSpeaker3Note);
     m_chooser.addOption(RedLeftOneNote, RedLeftOneNote);
     m_chooser.addOption(goinStraight, goinStraight);
     m_chooser.addOption(centerTwoNote, centerTwoNote);
-    m_chooser.addOption(centerBlueThreeNote, centerBlueThreeNote);
     m_chooser.addOption(centerRedThreeNote, centerRedThreeNote);
     SmartDashboard.putData("Auto choices", m_chooser);
 
@@ -184,11 +195,11 @@ public class Robot extends TimedRobot {
     driveRightA.restoreFactoryDefaults();
     driveLeftB.restoreFactoryDefaults();
     driveRightB.restoreFactoryDefaults();
-
-    driveLeftA.enableVoltageCompensation(8.0);
-    driveRightA.enableVoltageCompensation(8.0);
-    driveLeftB.enableVoltageCompensation(8.0);
-    driveRightB.enableVoltageCompensation(8.0);
+    double voltageComp = 10.0;
+    driveLeftA.enableVoltageCompensation(voltageComp);
+    driveRightA.enableVoltageCompensation(voltageComp);
+    driveLeftB.enableVoltageCompensation(voltageComp);
+    driveRightB.enableVoltageCompensation(voltageComp);
 
     driveLeftA.setOpenLoopRampRate(0.5);
     driveRightA.setOpenLoopRampRate(0.5);
@@ -208,6 +219,8 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Right Position Var", rightPosition);
     SmartDashboard.putNumber("Left Position Var", leftPosition);
+
+    SmartDashboard.putNumber("Overall Speed", (turn / speed) - Forward);
 
     SmartDashboard.putNumber("ShooterA", shootingSpeedA);
     SmartDashboard.putNumber("ShooterB", shootingSpeedB);
@@ -236,6 +249,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    double voltageComp = 8.0;
+    driveLeftA.enableVoltageCompensation(voltageComp);
+    driveRightA.enableVoltageCompensation(voltageComp);
+    driveLeftB.enableVoltageCompensation(voltageComp);
+    driveRightB.enableVoltageCompensation(voltageComp);
     stopEverything();
     driveRightA.getEncoder().setPosition(0);
     driveLeftA.getEncoder().setPosition(0);
@@ -277,7 +295,7 @@ public class Robot extends TimedRobot {
     } else if (m_autoSelected == RedLeftOneNote) {
       runRedLeftOneNote(autoTimeElapsed);
     } else if (m_autoSelected == RedRightOneNote) {
-      runRedRightOneNote(autoTimeElapsed); 
+      runRedRightOneNote(autoTimeElapsed);
     } else if (m_autoSelected == blueLeftTwoNote) {
       runblueLeftTwoNote(autoTimeElapsed);
     } else if (m_autoSelected == redLeftTwoNoteNEW) {
@@ -288,8 +306,6 @@ public class Robot extends TimedRobot {
       runRightSpeaker2NoteBlue(autoTimeElapsed);
     } else if (m_autoSelected.equals(rightSpeaker2NoteRed)) {
       runRightSpeaker2NoteRed(autoTimeElapsed);
-    } else if (m_autoSelected.equals(rightSpeaker3Note)) {
-      runRightSpeaker3Note(autoTimeElapsed);
     } else if (m_autoSelected.equals(goinStraight)) {
       runGoinStraight(autoTimeElapsed);
     } else if (m_autoSelected.equals(centerTwoNote)) {
@@ -454,6 +470,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   public void runRedCenterThreeNote(double autoTimeElapsed) {
     if (state == "init") {
       System.out.println("Running init state");
@@ -746,7 +763,7 @@ public class Robot extends TimedRobot {
   /**
    * One note, in front of speaker
    */
-  public void runRedLeftOneNote(double autoTimeElapsed) { //NOT A SHOOT N' GO
+  public void runRedLeftOneNote(double autoTimeElapsed) { // NOT A SHOOT N' GO
     System.out.println("Entering oneNoteAuto block");
     if (state == "init") {
       System.out.println("Running init state");
@@ -1118,6 +1135,11 @@ public class Robot extends TimedRobot {
   /* This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    double voltageComp = 10.0;
+    driveLeftA.enableVoltageCompensation(voltageComp);
+    driveRightA.enableVoltageCompensation(voltageComp);
+    driveLeftB.enableVoltageCompensation(voltageComp);
+    driveRightB.enableVoltageCompensation(voltageComp);
 
     driveLeftB.follow(driveLeftA);
     driveRightB.follow(driveRightA);
@@ -1131,22 +1153,27 @@ public class Robot extends TimedRobot {
   @Override
 
   public void teleopPeriodic() {
-    turn = (-controller1.getRightX() * -turnSpeed);
-    Forward = controller1.getLeftY();
+    
 
     // SPEED CONTROLS
     if (controller1.getLeftBumper()) {
-      speed = 1;
-      turnSpeed = 1.5;
+      speed = 2.5;
+      turnSpeed = 3;
+      
     } else if (controller1.getRightBumper()) {
       speed = 0.5;
       turnSpeed = 0.5;
+      
     } else if (controller1.getRightTriggerAxis() > 0.25) {
       turnSpeed = 7.5;
+      
     } else {
       speed = 0.85;
-      turnSpeed = 0.65;
+      turnSpeed = 0.5;
     }
+    turn = (-controller1.getRightX() * -turnSpeed);
+    Forward = controller1.getLeftY();
+    tankDrive(((Forward * speed) - (turn)) * 1.04, ((Forward * speed) + (turn)) * 0.8);
     // DROVE DATA
     SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber(" turning speed", turn);
@@ -1156,13 +1183,12 @@ public class Robot extends TimedRobot {
     // JOYSTICK CONTROLS + TRIGGER
     SmartDashboard.putNumber("left speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber("right speed", (turn / speed) + Forward);
-    tankDrive(((Forward * speed) - (turn)) * 1.04, ((Forward * speed) + (turn)) * 0.8);
     // TRIGGER CONTROLS (no turn yet)
 
     // MANIPULATOR CONTROLS
     // SHOOTER SPEED CONTROLS
     if (controller2.getXButton()) { // slow
-      shootingSpeedA = 100;
+      shootingSpeedA = 100; //100 acts as a "sweetspot"!!!
     } else if (controller2.getYButton()) { // fast
       shootingSpeedA = 2000;
     } else { // normal
@@ -1201,8 +1227,8 @@ public class Robot extends TimedRobot {
     // OUTTAKE
     else if (controller2.getLeftTriggerAxis() > 0.5) {
       ampServo.set(flapUp);
-      shooterA.setControl(velocitySlow.withVelocity(25));
-      shooterB.setControl(velocitySlow.withVelocity(25));
+      shooterA.setControl(velocitySlow.withVelocity(30));
+      shooterB.setControl(velocitySlow.withVelocity(30));
     }
     // HANGING
     if (controller2.getLeftY() >= 0.2) {
