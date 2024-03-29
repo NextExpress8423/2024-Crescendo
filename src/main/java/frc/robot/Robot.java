@@ -382,7 +382,7 @@ public class Robot extends TimedRobot {
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(0);
       tankDrive(0.5, -0.5);
-      if (leftPosition < 2.0) {
+      if (leftPosition < 2.75) {
         state = "eight";
         tankDrive(0, 0);
       }
@@ -417,7 +417,7 @@ public class Robot extends TimedRobot {
     if (state == "ten") {
       System.out.println("Running ten state");
       tankDrive(-0.5, 0.5);
-      if (leftPosition > 3) {
+      if (leftPosition > 2.25) {
         state = "eleven";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -851,7 +851,7 @@ public class Robot extends TimedRobot {
       tankDrive(-0.5, 0.5);
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
-      if (leftPosition > 8.25) {
+      if (leftPosition > 10.25) {
         state = "five";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -889,7 +889,7 @@ public class Robot extends TimedRobot {
     if (state == "eight") {
       tankDrive(0.5, -0.5);
       intake.set(0);
-      if (leftPosition < 6) {
+      if (leftPosition < 4) {
         state = "nine";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -963,7 +963,7 @@ public class Robot extends TimedRobot {
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
       intake.set(-0.5);
-      if (leftPosition > 42) {
+      if (leftPosition > 37) {
         state = "six";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
@@ -981,7 +981,7 @@ public class Robot extends TimedRobot {
     if (state == "seven") {
       tankDrive(0.4, 0.4);
       intake.set(0);
-      if (leftPosition < 15) {
+      if (leftPosition < 20) {
         state = "eight";
         wait = autoTimeElapsed + 1;
         tankDrive(0, 0);
