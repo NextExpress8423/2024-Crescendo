@@ -7,11 +7,14 @@ package frc.robot;
 import java.lang.Math;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ExternalFollower;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -62,6 +65,7 @@ public class Robot extends TimedRobot {
   CANSparkMax driveRightB = new CANSparkMax(2, MotorType.kBrushless);
   CANSparkMax driveLeftA = new CANSparkMax(8, MotorType.kBrushless);
   CANSparkMax driveLeftB = new CANSparkMax(9, MotorType.kBrushless);
+   double backward;
   Servo ampServo = new Servo(1);
   double turn = controller1.getRightX() / turnSpeed;
   TalonFX shooterA = new TalonFX(4);
@@ -73,13 +77,15 @@ public class Robot extends TimedRobot {
   public double rightPosition = -driveRightA.getEncoder().getPosition();
   public double leftPosition = driveLeftA.getEncoder().getPosition();
   double RPM;
-  VelocityVoltage velocity = new VelocityVoltage(RPM, 0, true, 0, 0, false, false, false);
+  
   VelocityVoltage velocitySlow = new VelocityVoltage(RPM, 0, true, 0, 1, false, false, false);
+  NeutralModeValue Coast = NeutralModeValue.Coast;
   TalonSRX amp = new TalonSRX(11);
   double kP = 0.05;
   String state = "init";
-  double shootingSpeedA = 1500;
-  double shootingSpeedB = 1200;
+  double shootingSpeedA = 1500; //1500
+  double shootingSpeedB = 1200; //1200
+  VelocityVoltage velocity = new VelocityVoltage(shootingSpeedA, 0, true, 0, 0, false, false, false);
   private static final double flapDown = 1.0;
   private static final double flapUp = 0.5;
 
@@ -172,17 +178,21 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.Slot0.kP = 0.101;
-    configs.Slot0.kD = 0.01;
+    configs.Slot0.kP = 0.6;
+       configs.Slot0.kI = 0.55;
+    //configs.Slot0.kD = 0.01;
 
     configs.Slot1.kP = 0.101;
     configs.Slot1.kI = 0.065;
-    configs.Slot1.kD = 0.01;
+    //configs.Slot1.kD = 0.01;
 
-    configs.Voltage.PeakForwardVoltage = 8;
-    configs.Voltage.PeakReverseVoltage = -8;
+    configs.Voltage.PeakForwardVoltage = 11;
+    configs.Voltage.PeakReverseVoltage = -11;
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+
+    configs.MotorOutput.NeutralMode = Coast;
+
     shooterA.getConfigurator().apply(configs);
     shooterB.getConfigurator().apply(configs);
 
@@ -380,6 +390,7 @@ public class Robot extends TimedRobot {
       System.out.println("Running two state");
       shooterA.setControl(velocity.withVelocity(0));
       shooterB.setControl(velocity.withVelocity(0));
+      
       intake.set(0);
       tankDrive(0.5, -0.5);
       if (leftPosition < 2.75) {
@@ -1153,8 +1164,8 @@ public class Robot extends TimedRobot {
   @Override
 
   public void teleopPeriodic() {
-    
-
+    SmartDashboard.putNumber("shootingSpeeda",shooterA.getVelocity().getValueAsDouble());
+      SmartDashboard.putNumber("shootingSpeedb",shooterB.getVelocity().getValueAsDouble());
     // SPEED CONTROLS
     if (controller1.getLeftBumper()) {
       speed = 2.5;
@@ -1164,17 +1175,20 @@ public class Robot extends TimedRobot {
       speed = 0.5;
       turnSpeed = 0.5;
       
-    } else if (controller1.getRightTriggerAxis() > 0.25) {
-      turnSpeed = 7.5;
+    }
+    //  else if (controller1.getRightTriggerAxis() > 0.25) {
+    //   turnSpeed = 7.5;
       
-    } else {
+    // }
+     else {
       speed = 0.85;
       turnSpeed = 0.5;
     }
     turn = (-controller1.getRightX() * -turnSpeed);
-    Forward = controller1.getLeftY();
-    tankDrive(((Forward * speed) - (turn)) * 1.04, ((Forward * speed) + (turn)) * 0.8);
-    // DROVE DATA
+    Forward = controller1.getRightTriggerAxis();
+    backward = controller1.getLeftTriggerAxis();
+    tankDrive(((-Forward + backward * speed) - (turn)) * 1.04, ((-Forward + backward * speed) + (turn)) * 0.8);
+    // DROVE DATA)
     SmartDashboard.putNumber(" drive speed", ((turn / speed) - Forward));
     SmartDashboard.putNumber(" turning speed", turn);
     SmartDashboard.putNumber(" speed", speed);
@@ -1192,18 +1206,18 @@ public class Robot extends TimedRobot {
     } else if (controller2.getYButton()) { // fast
       shootingSpeedA = 2000;
     } else { // normal
-      shootingSpeedA = 1500;
+      shootingSpeedA = 5500;//1500
     }
     shootingSpeedB = shootingSpeedA * 0.8;
     // SHOOT
     if (controller2.getRightTriggerAxis() > 0.5) {
-      shooterA.setControl(velocity.withVelocity(shootingSpeedA));
-      shooterB.setControl(velocity.withVelocity(shootingSpeedB));
+      shooterA.setControl(velocity.withVelocity(shootingSpeedA/60));
+      shooterB.setControl(velocity.withVelocity(shootingSpeedB/60));
     }
     // INTAKE
     else if (controller2.getRightBumper()) {
-      shooterB.setControl(velocity.withVelocity(-10));
-      shooterA.setControl(velocity.withVelocity(-10));
+      shooterB.setControl(velocitySlow.withVelocity(-10));
+      shooterA.setControl(velocitySlow.withVelocity(-10));
     } else {
       shooterA.set(0);
       shooterB.set(0);
